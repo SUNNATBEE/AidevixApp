@@ -1,0 +1,117 @@
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
+import { useTheme } from '../../theme';
+import Input from '../../components/common/Input';
+import Button from '../../components/common/Button';
+import { useNavigation } from '@react-navigation/native';
+
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { register } from '../../store/slices/authSlice';
+
+const RegisterScreen = () => {
+  const { colors, spacing } = useTheme();
+  const navigation = useNavigation();
+  const dispatch = useAppDispatch();
+  const { loading, error } = useAppSelector((state) => state.auth);
+  const { control, handleSubmit, formState: { errors } } = useForm();
+
+  const onSubmit = (data: any) => {
+    dispatch(register(data));
+  };
+
+  return (
+    <KeyboardAvoidingView 
+      style={{ flex: 1, backgroundColor: colors.background }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={[styles.title, { color: colors.text }]}>Ro'yxatdan o'tish</Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+          Aidevix oilasiga qo'shiling
+        </Text>
+
+        <Controller
+          control={control}
+          name="username"
+          rules={{ required: 'Username kiriting' }}
+          render={({ field: { onChange, value } }) => (
+            <Input label="Username" placeholder="eshmat_dev" onChangeText={onChange} value={value} error={errors.username?.message as string} autoCapitalize="none" />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="firstName"
+          rules={{ required: 'Ismingizni kiriting' }}
+          render={({ field: { onChange, value } }) => (
+            <Input label="Ism" placeholder="Eshmat" onChangeText={onChange} value={value} error={errors.firstName?.message as string} />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="lastName"
+          rules={{ required: 'Familiyangizni kiriting' }}
+          render={({ field: { onChange, value } }) => (
+            <Input label="Familiya" placeholder="Toshmatov" onChangeText={onChange} value={value} error={errors.lastName?.message as string} />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="email"
+          rules={{ required: 'Email kiriting' }}
+          render={({ field: { onChange, value } }) => (
+            <Input label="Email" placeholder="mail@example.com" onChangeText={onChange} value={value} error={errors.email?.message as string} keyboardType="email-address" />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="password"
+          rules={{ required: 'Parol kiriting', minLength: { value: 6, message: 'Kamida 6ta belgi' } }}
+          render={({ field: { onChange, value } }) => (
+            <Input label="Parol" placeholder="********" onChangeText={onChange} value={value} error={errors.password?.message as string} secureTextEntry />
+          )}
+        />
+
+        {error && <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>}
+
+        <Button title="Davom etish" onPress={handleSubmit(onSubmit)} loading={loading} style={styles.button} />
+        
+        <Button 
+          title="Kirish sahifasiga qaytish" 
+          onPress={() => navigation.goBack()} 
+          variant="ghost" 
+        />
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+};
+
+const styles = StyleSheet.create({
+  content: {
+    padding: 24,
+    paddingTop: 60,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    marginBottom: 32,
+  },
+  button: {
+    marginTop: 16,
+    marginBottom: 12,
+  },
+  errorText: {
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+});
+
+export default RegisterScreen;
