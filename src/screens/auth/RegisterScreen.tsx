@@ -70,9 +70,19 @@ const RegisterScreen = () => {
         <Controller
           control={control}
           name="password"
-          rules={{ required: 'Parol kiriting', minLength: { value: 6, message: 'Kamida 6ta belgi' } }}
+          rules={{
+            required: 'Parol kiriting',
+            minLength: { value: 8, message: 'Kamida 8ta belgi' },
+            validate: (v: string) => {
+              if (!/[A-Z]/.test(v)) return 'Kamida bitta katta harf bo\'lsin';
+              if (!/[a-z]/.test(v)) return 'Kamida bitta kichik harf bo\'lsin';
+              if (!/\d/.test(v)) return 'Kamida bitta raqam bo\'lsin';
+              if (!/[^A-Za-z0-9]/.test(v)) return 'Kamida bitta maxsus belgi bo\'lsin (!@#...)';
+              return true;
+            },
+          }}
           render={({ field: { onChange, value } }) => (
-            <Input label="Parol" placeholder="********" onChangeText={onChange} value={value} error={errors.password?.message as string} secureTextEntry />
+            <Input label="Parol" placeholder="Kamida 8 belgi, A-a-1-!" onChangeText={onChange} value={value} error={errors.password?.message as string} secureTextEntry />
           )}
         />
 

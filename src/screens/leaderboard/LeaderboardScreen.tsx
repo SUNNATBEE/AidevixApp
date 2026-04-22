@@ -14,28 +14,45 @@ const LeaderboardScreen = () => {
     dispatch(fetchRanking({}));
   }, [dispatch]);
 
-  const renderItem = ({ item, index }: any) => (
-    <View style={[styles.row, { borderBottomColor: colors.border }]}>
-      <Text style={[styles.rank, { color: colors.textSecondary }]}>{index + 1}</Text>
-      <View style={styles.userInfo}>
-        <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary + '20' }]}>
-          <Text style={{ color: colors.primary }}>{item.firstName[0]}</Text>
+  const renderItem = ({ item, index }: any) => {
+    const nestedUser = item.user ?? {};
+    const firstName = nestedUser.firstName ?? item.firstName ?? '';
+    const lastName = nestedUser.lastName ?? item.lastName ?? '';
+    const username = nestedUser.username ?? item.username ?? '';
+    const displayName = [firstName, lastName].filter(Boolean).join(' ') || username || 'Foydalanuvchi';
+    const initial = (displayName[0] || '?').toUpperCase();
+    const rankTitle = item.rankTitle ?? nestedUser.rankTitle ?? '';
+    const xp = item.xp ?? nestedUser.xp ?? 0;
+
+    return (
+      <View style={[styles.row, { borderBottomColor: colors.border }]}>
+        <Text style={[styles.rank, { color: colors.textSecondary }]}>{item.rank ?? index + 1}</Text>
+        <View style={styles.userInfo}>
+          <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary + '20' }]}>
+            <Text style={{ color: colors.primary }}>{initial}</Text>
+          </View>
+          <View>
+            <Text style={[styles.userName, { color: colors.text }]}>{displayName}</Text>
+            {!!rankTitle && (
+              <Text style={[styles.userRank, { color: colors.textSecondary }]}>{rankTitle}</Text>
+            )}
+          </View>
         </View>
-        <View>
-          <Text style={[styles.userName, { color: colors.text }]}>{item.firstName} {item.lastName}</Text>
-          <Text style={[styles.userRank, { color: colors.textSecondary }]}>{item.rankTitle}</Text>
-        </View>
+        <Text style={[styles.xp, { color: colors.primary }]}>{xp} XP</Text>
       </View>
-      <Text style={[styles.xp, { color: colors.primary }]}>{item.xp} XP</Text>
-    </View>
-  );
+    );
+  };
+
+  const keyExtractor = (item: any, index: number) => {
+    const id = item?.user?._id ?? item?._id ?? item?.user?.username ?? item?.username;
+    return id ? String(id) : `row-${index}`;
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
         <Text style={[styles.title, { color: '#fff' }]}>Reyting</Text>
         <View style={styles.podium}>
-          {/* Top 3 users could go here */}
           <Text style={{ color: '#fff' }}>Haftalik eng kuchlilar</Text>
         </View>
       </View>
@@ -43,7 +60,7 @@ const LeaderboardScreen = () => {
       <FlatList
         data={users}
         renderItem={renderItem}
-        keyExtractor={(item: any) => item.username}
+        keyExtractor={keyExtractor}
         contentContainerStyle={styles.list}
       />
     </View>

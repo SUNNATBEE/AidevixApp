@@ -23,9 +23,9 @@ export const fetchCourses = createAsyncThunk(
   async (params: any, { rejectWithValue }) => {
     try {
       const response = await courseApi.getCourses(params);
-      return response.data.courses;
+      return response.data?.data?.courses ?? response.data?.courses ?? [];
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch courses');
+      return rejectWithValue(error.response?.data?.message || 'Kurslarni yuklab bo\'lmadi');
     }
   }
 );
@@ -35,9 +35,21 @@ export const fetchTopCourses = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await courseApi.getTopCourses();
-      return response.data;
+      return response.data?.data?.courses ?? response.data?.data ?? [];
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch top courses');
+      return rejectWithValue(error.response?.data?.message || 'Top kurslarni yuklab bo\'lmadi');
+    }
+  }
+);
+
+export const fetchCategories = createAsyncThunk(
+  'course/fetchCategories',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await courseApi.getCategories();
+      return response.data?.data?.categories ?? [];
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Kategoriyalarni yuklab bo\'lmadi');
     }
   }
 );
@@ -61,6 +73,9 @@ const courseSlice = createSlice({
       })
       .addCase(fetchTopCourses.fulfilled, (state, action) => {
         state.topCourses = action.payload;
+      })
+      .addCase(fetchCategories.fulfilled, (state, action) => {
+        state.categories = action.payload.map((c: any) => (typeof c === 'string' ? c : c.name));
       });
   },
 });

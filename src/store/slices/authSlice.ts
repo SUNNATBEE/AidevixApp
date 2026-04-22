@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../api/axiosInstance';
 import { storage } from '../../utils/storage';
 import { User } from '../../types/user';
@@ -19,16 +19,26 @@ const initialState: AuthState = {
   error: null,
 };
 
+const pickError = (error: any, fallback: string): string => {
+  const msg = error?.response?.data?.message;
+  if (typeof msg === 'string' && msg.length > 0) return msg;
+  if (error?.message === 'Network Error') return 'Internet aloqasini tekshiring';
+  return fallback;
+};
+
 export const login = createAsyncThunk(
   'auth/login',
-  async (credentials: any, { rejectWithValue }) => {
+  async (credentials: { email: string; password: string }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post('/auth/login', credentials);
-      const { user, token } = response.data;
-      await storage.setToken(token);
+      const user = response.data?.data?.user ?? response.data?.user ?? null;
+      const token = await storage.getToken();
+      if (!user || !token) {
+        return rejectWithValue('Kirishda xatolik yuz berdi');
+      }
       return { user, token };
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Login failed');
+      return rejectWithValue(pickError(error, 'Email yoki parol noto\'g\'ri'));
     }
   }
 );
@@ -38,11 +48,14 @@ export const register = createAsyncThunk(
   async (userData: any, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post('/auth/register', userData);
-      const { user, token } = response.data;
-      await storage.setToken(token);
+      const user = response.data?.data?.user ?? response.data?.user ?? null;
+      const token = await storage.getToken();
+      if (!user || !token) {
+        return rejectWithValue('Ro\'yxatdan o\'tishda xatolik yuz berdi');
+      }
       return { user, token };
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Registration failed');
+      return rejectWithValue(pickError(error, 'Ro\'yxatdan o\'tish amalga oshmadi'));
     }
   }
 );
@@ -54,10 +67,15 @@ export const checkAuth = createAsyncThunk(
       const token = await storage.getToken();
       if (!token) return null;
       const response = await axiosInstance.get('/auth/me');
-      return { user: response.data, token };
+      const user = response.data?.data?.user ?? response.data?.data ?? null;
+      if (!user) {
+        await storage.clearTokens();
+        return rejectWithValue('Sessiya muddati tugagan');
+      }
+      return { user, token };
     } catch (error: any) {
       await storage.clearTokens();
-      return rejectWithValue('Session expired');
+      return rejectWithValue('Sessiya muddati tugagan');
     }
   }
 );
@@ -70,7 +88,11 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.isLoggedIn = false;
+      state.error = null;
       storage.clearTokens();
+    },
+    clearAuthError: (state) => {
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -87,7 +109,8 @@ const authSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.isLoggedIn = false;
+        state.error = (action.payload as string) || 'Kirish amalga oshmadi';
       })
       .addCase(register.pending, (state) => {
         state.loading = true;
@@ -101,17 +124,28 @@ const authSlice = createSlice({
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.isLoggedIn = false;
+        state.error = (action.payload as string) || 'Ro\'yxatdan o\'tishda xatolik';
+      })
+      .addCase(checkAuth.pending, (state) => {
+        state.loading = true;
       })
       .addCase(checkAuth.fulfilled, (state, action) => {
+        state.loading = false;
         if (action.payload) {
           state.user = action.payload.user;
           state.token = action.payload.token;
           state.isLoggedIn = true;
         }
+      })
+      .addCase(checkAuth.rejected, (state) => {
+        state.loading = false;
+        state.isLoggedIn = false;
+        state.user = null;
+        state.token = null;
       });
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, clearAuthError } = authSlice.actions;
 export default authSlice.reducer;

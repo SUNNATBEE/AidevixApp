@@ -6,9 +6,9 @@ export const fetchRanking = createAsyncThunk(
   async (params: any, { rejectWithValue }) => {
     try {
       const response = await rankingApi.getTopUsers(params);
-      return response.data;
+      return response.data?.data?.users ?? response.data?.users ?? [];
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch ranking');
+      return rejectWithValue(error.response?.data?.message || 'Reytingni yuklab bo\'lmadi');
     }
   }
 );
@@ -29,7 +29,7 @@ const rankingSlice = createSlice({
       })
       .addCase(fetchRanking.fulfilled, (state, action) => {
         state.loading = false;
-        state.users = action.payload.users;
+        state.users = action.payload as any;
       })
       .addCase(fetchRanking.rejected, (state, action) => {
         state.loading = false;

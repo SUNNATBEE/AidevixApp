@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"F:/Desktop/AidevixApp/.claude/hooks/model-suggest.cjs\""
+          }
+        ]
+      }
+    ]
+  }
+}

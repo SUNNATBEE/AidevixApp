@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '../../theme';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -17,11 +17,9 @@ const ActivityFeed = () => {
       <Text style={[styles.title, { color: colors.text, marginHorizontal: spacing.xl }]}>
         Ijtimoiy faollik
       </Text>
-      <FlatList
-        data={activities}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={[styles.item, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <View style={styles.list}>
+        {activities.map((item) => (
+          <View key={item.id} style={[styles.item, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <View style={[styles.iconContainer, { backgroundColor: item.color + '20' }]}>
               <Ionicons name={item.icon as any} size={20} color={item.color} />
             </View>
@@ -32,9 +30,8 @@ const ActivityFeed = () => {
               <Text style={[styles.timeText, { color: colors.textSecondary }]}>{item.time}</Text>
             </View>
           </View>
-        )}
-        style={styles.list}
-      />
+        ))}
+      </View>
     </View>
   );
 };
