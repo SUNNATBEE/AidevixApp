@@ -59,7 +59,8 @@ Loyiha professional **Modular Architecture** asosida qurilgan:
 src/
 ├── api/             # Backend bilan bog'lanish (Axios)
 ├── components/      # UI qismlari (Buttonlar, Inputlar, Cardlar)
-│   ├── common/      # Hamma joyda ishlatiladigan umumiy komponentlar
+│   ├──
+ common/      # Hamma joyda ishlatiladigan umumiy komponentlar
 │   └── home/        # Faqat Home sahifasiga tegishli qismlar
 ├── navigation/      # Sahifalar orasidagi o'tishlar (React Navigation)
 │   ├── MainTabs.tsx # Pastki menyu (Tabs)

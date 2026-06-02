@@ -72,15 +72,27 @@ const HomeScreen = ({ navigation }: any) => {
             <Text style={{ color: colors.primary }}>Hammasi</Text>
           </TouchableOpacity>
         </View>
+
         <TouchableOpacity style={[styles.challengeCard, { backgroundColor: colors.primary }]}>
           <View style={styles.challengeInfo}>
-            <Text style={styles.challengeTitle}>1ta kurs ko'rish</Text>
+            <Text style={styles.challengeTitle}>1ta dars ko'rish</Text>
             <Text style={styles.challengeReward}>+100 XP mukofot</Text>
             <View style={styles.progressBar}>
               <View style={[styles.progressFill, { width: '40%' }]} />
             </View>
           </View>
           <Ionicons name="gift" size={44} color="rgba(255,255,255,0.4)" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.challengeCard, styles.challengeCardSecondary, { backgroundColor: colors.accent ?? '#f59e0b' }]}>
+          <View style={styles.challengeInfo}>
+            <Text style={styles.challengeTitle}>Kamida 2ta dars ko'rish</Text>
+            <Text style={styles.challengeReward}>+200 XP mukofot</Text>
+            <View style={styles.progressBar}>
+              <View style={[styles.progressFill, { width: '0%' }]} />
+            </View>
+          </View>
+          <Ionicons name="trophy" size={44} color="rgba(255,255,255,0.4)" />
         </TouchableOpacity>
       </View>
 
@@ -217,6 +229,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     overflow: 'hidden',
+  },
+  challengeCardSecondary: {
+    marginTop: 12,
   },
   challengeInfo: {
     flex: 1,

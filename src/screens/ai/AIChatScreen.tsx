@@ -1,20 +1,29 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  FlatList, 
-  TextInput, 
-  TouchableOpacity, 
-  KeyboardAvoidingView, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TextInput,
+  TouchableOpacity,
+  Pressable,
+  KeyboardAvoidingView,
   Platform,
-  ActivityIndicator
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { useTheme } from '../../theme';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { sendMessage, addMessage } from '../../store/slices/chatSlice';
+import { sendMessage, addMessage, clearChat, Message } from '../../store/slices/chatSlice';
 import { Ionicons } from '@expo/vector-icons';
 import { triggerHaptic } from '../../utils/haptics';
+
+const SUGGESTIONS = [
+  'React Native nima?',
+  'useEffect qanday ishlaydi?',
+  'Kodimda xato bor — yordam ber',
+  'JavaScript va TypeScript farqi nima?',
+];
 
 const AIChatScreen = () => {
   const { colors, spacing, typography } = useTheme();
@@ -23,53 +32,101 @@ const AIChatScreen = () => {
   const [input, setInput] = useState('');
   const flatListRef = useRef<FlatList>(null);
 
-  const handleSend = () => {
-    if (!input.trim() || loading) return;
+  const dispatchSend = (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed || loading) return;
 
-    const userMessage = {
-      id: Date.now().toString(),
-      role: 'user' as const,
-      content: input.trim(),
+    const userMessage: Message = {
+      id: `${Date.now()}-u`,
+      role: 'user',
+      content: trimmed,
       timestamp: Date.now(),
     };
 
     dispatch(addMessage(userMessage));
-    dispatch(sendMessage(input.trim()));
+    dispatch(sendMessage(trimmed));
     setInput('');
     triggerHaptic('light');
   };
 
+  const handleSend = () => dispatchSend(input);
+
+  const handleSuggestion = (text: string) => {
+    triggerHaptic('light');
+    dispatchSend(text);
+  };
+
+  const handleClear = () => {
+    Alert.alert('Suhbatni tozalash', 'Barcha xabarlar o\'chirilsinmi?', [
+      { text: 'Bekor qilish', style: 'cancel' },
+      {
+        text: 'Tozalash',
+        style: 'destructive',
+        onPress: () => {
+          triggerHaptic('warning');
+          dispatch(clearChat());
+        },
+      },
+    ]);
+  };
+
   useEffect(() => {
-    setTimeout(() => {
+    const t = setTimeout(() => {
       flatListRef.current?.scrollToEnd({ animated: true });
     }, 100);
-  }, [messages]);
+    return () => clearTimeout(t);
+  }, [messages, loading]);
 
-  const renderMessage = ({ item }: any) => {
+  const renderMessage = ({ item }: { item: Message }) => {
     const isUser = item.role === 'user';
+    const isError = !!item.error;
+    const bubbleBg = isUser
+      ? colors.primary
+      : isError
+      ? colors.error + '20'
+      : colors.card;
+    const textColor = isUser ? '#ffffff' : isError ? colors.error : colors.text;
+    const borderColor = isError ? colors.error : colors.border;
     return (
-      <View style={[
-        styles.messageWrapper, 
-        isUser ? styles.userWrapper : styles.assistantWrapper
-      ]}>
+      <View
+        style={[
+          styles.messageWrapper,
+          isUser ? styles.userWrapper : styles.assistantWrapper,
+          { marginBottom: spacing.md },
+        ]}
+      >
         {!isUser && (
-          <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
-            <Ionicons name="sparkles" size={16} color="#fff" />
+          <View
+            style={[
+              styles.avatar,
+              { backgroundColor: isError ? colors.error : colors.primary },
+            ]}
+          >
+            <Ionicons
+              name={isError ? 'alert' : 'sparkles'}
+              size={16}
+              color="#ffffff"
+            />
           </View>
         )}
-        <View style={[
-          styles.messageBubble,
-          { 
-            backgroundColor: isUser ? colors.primary : colors.card,
-            borderColor: colors.border,
-            borderWidth: isUser ? 0 : 1,
-          },
-          isUser ? styles.userBubble : styles.assistantBubble
-        ]}>
-          <Text style={[
-            styles.messageText, 
-            { color: isUser ? '#fff' : colors.text }
-          ]}>
+        <View
+          style={[
+            styles.messageBubble,
+            {
+              backgroundColor: bubbleBg,
+              borderColor,
+              borderWidth: isUser ? 0 : 1,
+              padding: spacing.md,
+            },
+            isUser ? styles.userBubble : styles.assistantBubble,
+          ]}
+        >
+          <Text
+            style={[
+              styles.messageText,
+              { color: textColor, fontSize: typography.sizes.md },
+            ]}
+          >
             {item.content}
           </Text>
         </View>
@@ -77,15 +134,45 @@ const AIChatScreen = () => {
     );
   };
 
+  // Faqat welcome qoldi — foydalanuvchiga taklif chiplarini ko'rsatamiz.
+  const showSuggestions = messages.length <= 1 && !loading;
+
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.background }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
     >
-      <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>AICoach</Text>
-        <Text style={[styles.headerStatus, { color: colors.success }]}>Online</Text>
+      <View
+        style={[
+          styles.header,
+          {
+            borderBottomColor: colors.border,
+            paddingHorizontal: spacing.lg,
+          },
+        ]}
+      >
+        <View style={{ flex: 1 }}>
+          <Text
+            style={[
+              styles.headerTitle,
+              { color: colors.text, fontSize: typography.sizes.lg },
+            ]}
+          >
+            AICoach
+          </Text>
+          <Text
+            style={[
+              styles.headerStatus,
+              { color: colors.success, fontSize: typography.sizes.xs },
+            ]}
+          >
+            {loading ? 'Yozmoqda...' : 'Online'}
+          </Text>
+        </View>
+        <TouchableOpacity onPress={handleClear} hitSlop={10}>
+          <Ionicons name="trash-outline" size={22} color={colors.textSecondary} />
+        </TouchableOpacity>
       </View>
 
       <FlatList
@@ -94,32 +181,119 @@ const AIChatScreen = () => {
         renderItem={renderMessage}
         keyExtractor={(item) => item.id}
         contentContainerStyle={[styles.listContent, { padding: spacing.md }]}
-        ListFooterComponent={loading ? (
-          <View style={styles.typingContainer}>
-            <ActivityIndicator size="small" color={colors.primary} />
-            <Text style={[styles.typingText, { color: colors.textSecondary }]}>AICoach o'ylamoqda...</Text>
-          </View>
-        ) : null}
+        showsVerticalScrollIndicator={false}
+        ListFooterComponent={
+          <>
+            {loading && (
+              <View
+                style={[
+                  styles.typingContainer,
+                  { padding: spacing.sm, marginBottom: spacing.sm },
+                ]}
+              >
+                <ActivityIndicator size="small" color={colors.primary} />
+                <Text
+                  style={[
+                    styles.typingText,
+                    { color: colors.textSecondary, marginLeft: spacing.sm },
+                  ]}
+                >
+                  AICoach o'ylamoqda...
+                </Text>
+              </View>
+            )}
+            {showSuggestions && (
+              <View style={{ paddingTop: spacing.md }}>
+                <Text
+                  style={{
+                    color: colors.textSecondary,
+                    fontSize: typography.sizes.xs,
+                    marginBottom: spacing.sm,
+                    paddingHorizontal: spacing.xs,
+                  }}
+                >
+                  Nimadan boshlaymiz?
+                </Text>
+                <View style={styles.suggestions}>
+                  {SUGGESTIONS.map((s) => (
+                    <Pressable
+                      key={s}
+                      onPress={() => handleSuggestion(s)}
+                      style={({ pressed }) => [
+                        styles.suggestionChip,
+                        {
+                          backgroundColor: colors.card,
+                          borderColor: colors.border,
+                          opacity: pressed ? 0.6 : 1,
+                          paddingVertical: spacing.sm,
+                          paddingHorizontal: spacing.md,
+                          marginRight: spacing.sm,
+                          marginBottom: spacing.sm,
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={{
+                          color: colors.text,
+                          fontSize: typography.sizes.sm,
+                        }}
+                      >
+                        {s}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+            )}
+          </>
+        }
       />
 
-      <View style={[styles.inputWrapper, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
-        <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="mic-outline" size={24} color={colors.textSecondary} />
-        </TouchableOpacity>
+      <View
+        style={[
+          styles.inputWrapper,
+          {
+            backgroundColor: colors.card,
+            borderTopColor: colors.border,
+            paddingHorizontal: spacing.md,
+            paddingVertical: spacing.sm,
+          },
+        ]}
+      >
         <TextInput
-          style={[styles.input, { color: colors.text, backgroundColor: colors.background }]}
+          style={[
+            styles.input,
+            {
+              color: colors.text,
+              backgroundColor: colors.background,
+              fontSize: typography.sizes.md,
+            },
+          ]}
           placeholder="Savol bering yoki kodni tashlang..."
           placeholderTextColor={colors.textSecondary}
           value={input}
           onChangeText={setInput}
           multiline
+          editable={!loading}
         />
-        <TouchableOpacity 
-          style={[styles.sendButton, { backgroundColor: input.trim() ? colors.primary : colors.border }]}
+        <TouchableOpacity
+          style={[
+            styles.sendButton,
+            {
+              backgroundColor:
+                input.trim() && !loading ? colors.primary : colors.border,
+              marginLeft: spacing.sm,
+            },
+          ]}
           onPress={handleSend}
           disabled={!input.trim() || loading}
+          activeOpacity={0.8}
         >
-          <Ionicons name="send" size={20} color="#fff" />
+          {loading ? (
+            <ActivityIndicator size="small" color="#ffffff" />
+          ) : (
+            <Ionicons name="send" size={20} color="#ffffff" />
+          )}
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -129,31 +303,17 @@ const AIChatScreen = () => {
 const styles = StyleSheet.create({
   header: {
     paddingTop: 60,
-    paddingBottom: 15,
+    paddingBottom: 14,
+    flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
   },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  headerStatus: {
-    fontSize: 12,
-  },
-  listContent: {
-    flexGrow: 1,
-  },
-  messageWrapper: {
-    flexDirection: 'row',
-    marginBottom: 16,
-    maxWidth: '85%',
-  },
-  userWrapper: {
-    alignSelf: 'flex-end',
-  },
-  assistantWrapper: {
-    alignSelf: 'flex-start',
-  },
+  headerTitle: { fontWeight: '700' },
+  headerStatus: { marginTop: 2 },
+  listContent: { flexGrow: 1 },
+  messageWrapper: { flexDirection: 'row', maxWidth: '85%' },
+  userWrapper: { alignSelf: 'flex-end' },
+  assistantWrapper: { alignSelf: 'flex-start' },
   avatar: {
     width: 32,
     height: 32,
@@ -163,37 +323,24 @@ const styles = StyleSheet.create({
     marginRight: 8,
     marginTop: 4,
   },
-  messageBubble: {
-    padding: 12,
-    borderRadius: 16,
-  },
-  userBubble: {
-    borderBottomRightRadius: 4,
-  },
-  assistantBubble: {
-    borderBottomLeftRadius: 4,
-  },
-  messageText: {
-    fontSize: 15,
-    lineHeight: 20,
-  },
+  messageBubble: { borderRadius: 16 },
+  userBubble: { borderBottomRightRadius: 4 },
+  assistantBubble: { borderBottomLeftRadius: 4 },
+  messageText: { lineHeight: 22 },
   inputWrapper: {
     flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    paddingBottom: Platform.OS === 'ios' ? 30 : 12,
+    alignItems: 'flex-end',
     borderTopWidth: 1,
+    paddingBottom: Platform.OS === 'ios' ? 30 : 12,
   },
   input: {
     flex: 1,
     borderRadius: 20,
     paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginHorizontal: 8,
-    maxHeight: 100,
-  },
-  iconButton: {
-    padding: 4,
+    paddingTop: 10,
+    paddingBottom: 10,
+    maxHeight: 120,
+    minHeight: 40,
   },
   sendButton: {
     width: 40,
@@ -202,15 +349,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  typingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 8,
-  },
-  typingText: {
-    marginLeft: 8,
-    fontSize: 12,
-  }
+  typingContainer: { flexDirection: 'row', alignItems: 'center' },
+  typingText: { fontSize: 12 },
+  suggestions: { flexDirection: 'row', flexWrap: 'wrap' },
+  suggestionChip: { borderRadius: 999, borderWidth: 1 },
 });
 
 export default AIChatScreen;

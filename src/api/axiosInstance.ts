@@ -21,12 +21,43 @@ const extractCookie = (setCookie: unknown, name: string): string | null => {
   return null;
 };
 
+const pickString = (obj: any, keys: string[]): string | null => {
+  if (!obj || typeof obj !== 'object') return null;
+  for (const key of keys) {
+    const value = obj[key];
+    if (typeof value === 'string' && value.length > 0) return value;
+  }
+  return null;
+};
+
+// Native ilovada token JSON body'da keladi (cookie emas — MOBILE_APP_GUIDE.md 3.1).
+// Backend javob shakli aniq ma'lum emasligi uchun barcha keng tarqalgan
+// joylarni tekshiramiz: {accessToken}, {data:{accessToken}}, {tokens:{access}}, ...
+const extractTokensFromBody = (body: any): { access: string | null; refresh: string | null } => {
+  const containers = [body, body?.data, body?.tokens, body?.data?.tokens].filter(Boolean);
+  let access: string | null = null;
+  let refresh: string | null = null;
+  for (const container of containers) {
+    access = access || pickString(container, ['accessToken', 'access_token', 'access', 'token']);
+    refresh = refresh || pickString(container, ['refreshToken', 'refresh_token', 'refresh']);
+  }
+  return { access, refresh };
+};
+
 const persistTokensFromResponse = async (response: AxiosResponse) => {
-  const setCookie = (response.headers as any)?.['set-cookie'];
-  const access = extractCookie(setCookie, 'aidevix_access');
-  const refresh = extractCookie(setCookie, 'aidevix_refresh');
-  if (access) await storage.setToken(access);
-  if (refresh) await storage.setRefreshToken(refresh);
+  // 1-usul: JSON body (native uchun asosiy yo'l)
+  const fromBody = extractTokensFromBody(response.data);
+  if (fromBody.access) await storage.setToken(fromBody.access);
+  if (fromBody.refresh) await storage.setRefreshToken(fromBody.refresh);
+
+  // 2-usul: Set-Cookie (zaxira — RN'da odatda ko'rinmaydi, lekin web'da ishlaydi)
+  if (!fromBody.access || !fromBody.refresh) {
+    const setCookie = (response.headers as any)?.['set-cookie'];
+    const access = extractCookie(setCookie, 'aidevix_access');
+    const refresh = extractCookie(setCookie, 'aidevix_refresh');
+    if (!fromBody.access && access) await storage.setToken(access);
+    if (!fromBody.refresh && refresh) await storage.setRefreshToken(refresh);
+  }
 };
 
 axiosInstance.interceptors.request.use(
@@ -34,13 +65,6 @@ axiosInstance.interceptors.request.use(
     const token = await storage.getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-    }
-    const refresh = await storage.getRefreshToken();
-    const cookieParts: string[] = [];
-    if (token) cookieParts.push(`aidevix_access=${token}`);
-    if (refresh) cookieParts.push(`aidevix_refresh=${refresh}`);
-    if (cookieParts.length > 0) {
-      (config.headers as any).Cookie = cookieParts.join('; ');
     }
     return config;
   },
@@ -63,11 +87,7 @@ axiosInstance.interceptors.response.use(
         const refreshToken = await storage.getRefreshToken();
         const refreshResp = await axios.post(
           `${API_URL}/auth/refresh-token`,
-          {},
-          {
-            withCredentials: true,
-            headers: refreshToken ? { Cookie: `aidevix_refresh=${refreshToken}` } : {},
-          }
+          { refreshToken }
         );
         await persistTokensFromResponse(refreshResp);
         const newToken = await storage.getToken();

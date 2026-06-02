@@ -4,10 +4,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../theme';
 import { MainTabParamList } from './types';
 import HomeStack from './HomeStack';
-import CoursesScreen from '../screens/courses/CoursesScreen';
+import CoursesStack from './CoursesStack';
+import ProfileStack from './ProfileStack';
 import PromptsScreen from '../screens/prompts/PromptsScreen';
 import LeaderboardScreen from '../screens/leaderboard/LeaderboardScreen';
-import ProfileScreen from '../screens/profile/ProfileScreen';
 import AIChatScreen from '../screens/ai/AIChatScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -50,10 +50,10 @@ const MainTabs = () => {
         component={HomeStack} 
         options={{ title: 'Asosiy' }} 
       />
-      <Tab.Screen 
-        name="CoursesStack" 
-        component={CoursesScreen} 
-        options={{ title: 'Kurslar' }} 
+      <Tab.Screen
+        name="CoursesStack"
+        component={CoursesStack}
+        options={{ title: 'Kurslar' }}
       />
       <Tab.Screen 
         name="AIChat" 
@@ -70,10 +70,10 @@ const MainTabs = () => {
         component={LeaderboardScreen} 
         options={{ title: 'Reyting' }} 
       />
-      <Tab.Screen 
-        name="ProfileStack" 
-        component={ProfileScreen} 
-        options={{ title: 'Profil' }} 
+      <Tab.Screen
+        name="ProfileStack"
+        component={ProfileStack}
+        options={{ title: 'Profil' }}
       />
     </Tab.Navigator>
   );

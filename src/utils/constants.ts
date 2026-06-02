@@ -1,4 +1,13 @@
-export const API_URL = process.env.EXPO_PUBLIC_API_URL || 'https://aidevix-backend-production.up.railway.app/api';
+// Backend URL ikki qismdan iborat: host (EXPO_PUBLIC_API_URL) + prefix (EXPO_PUBLIC_API_PREFIX).
+// Bu emulator/fizik qurilma/production o'rtasida URL'ni almashtirishni yengillashtiradi.
+const RAW_BASE = process.env.EXPO_PUBLIC_API_URL || 'https://aidevix-backend-production.up.railway.app';
+const RAW_PREFIX = process.env.EXPO_PUBLIC_API_PREFIX ?? '/api';
+
+const BASE = RAW_BASE.replace(/\/+$/, '');
+const PREFIX = RAW_PREFIX.startsWith('/') ? RAW_PREFIX : `/${RAW_PREFIX}`;
+
+export const API_URL = `${BASE}${PREFIX}`;
+
 export const TELEGRAM_CHANNEL = process.env.EXPO_PUBLIC_TELEGRAM_CHANNEL;
 export const TELEGRAM_BOT = process.env.EXPO_PUBLIC_TELEGRAM_BOT;
 export const INSTAGRAM_URL = process.env.EXPO_PUBLIC_INSTAGRAM_URL;

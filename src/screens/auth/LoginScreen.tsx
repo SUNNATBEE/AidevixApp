@@ -1,23 +1,26 @@
-import React from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  KeyboardAvoidingView, 
-  Platform, 
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   Image,
   TouchableOpacity
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
+import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../theme';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { login } from '../../store/slices/authSlice';
+import { login, clearAuthError } from '../../store/slices/authSlice';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigation/types';
+import { triggerHaptic } from '../../utils/haptics';
 
 const LoginScreen = () => {
   const { colors, spacing, typography } = useTheme();
@@ -25,15 +28,36 @@ const LoginScreen = () => {
   const { loading, error } = useAppSelector((state) => state.auth);
   const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
 
+  // Boshqa auth ekranlardan qolgan eski xato xabarini tozalaymiz.
+  // useFocusEffect — har safar ekranga qaytganda ham ishlaydi (mount paytidagi useEffect emas).
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(clearAuthError());
+    }, [dispatch])
+  );
+
   const { control, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
       email: '',
       password: '',
     }
   });
+  const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit = (data: any) => {
-    dispatch(login(data));
+  const togglePasswordVisibility = () => {
+    triggerHaptic('light');
+    setShowPassword((prev) => !prev);
+  };
+
+  const onSubmit = async (data: any) => {
+    try {
+      await dispatch(login(data)).unwrap();
+      // Muvaffaqiyat → RootNavigator isLoggedIn bo'yicha avtomatik o'tadi.
+    } catch {
+      // Barcha xatolar (jumladan email tasdiqlanmagan) authSlice.error orqali
+      // ekranda inline tarzda ko'rsatiladi — avtomatik navigatsiya yo'q.
+      triggerHaptic('error');
+    }
   };
 
   return (
@@ -85,7 +109,18 @@ const LoginScreen = () => {
                 onChangeText={onChange}
                 value={value}
                 error={errors.password?.message}
-                secureTextEntry
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                autoCorrect={false}
+                rightIcon={
+                  <TouchableOpacity onPress={togglePasswordVisibility} hitSlop={10}>
+                    <Ionicons
+                      name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                      size={22}
+                      color={colors.textSecondary}
+                    />
+                  </TouchableOpacity>
+                }
               />
             )}
           />

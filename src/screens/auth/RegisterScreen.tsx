@@ -1,23 +1,64 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../theme';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AuthStackParamList } from '../../navigation/types';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { register } from '../../store/slices/authSlice';
+import { register, login, clearAuthError } from '../../store/slices/authSlice';
+import { triggerHaptic } from '../../utils/haptics';
 
 const RegisterScreen = () => {
   const { colors, spacing } = useTheme();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.auth);
   const { control, handleSubmit, formState: { errors } } = useForm();
+  const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit = (data: any) => {
-    dispatch(register(data));
+  // Login ekranidan qolgan eski xato xabarini tozalaymiz (state.auth.error global).
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(clearAuthError());
+    }, [dispatch])
+  );
+
+  const togglePasswordVisibility = () => {
+    triggerHaptic('light');
+    setShowPassword((prev) => !prev);
+  };
+
+  const onSubmit = async (data: any) => {
+    try {
+      const result = await dispatch(register(data)).unwrap();
+
+      // 1-holat: backend darhol sessiya berdi (user + token) — RootNavigator app'ga o'tadi.
+      if (!(result as any)?.requiresEmailVerification) return;
+
+      // 2-holat: backend email tasdiqlashni talab qiladi.
+      // Avval auto-login urinamiz — agar backend tasdiqlanmagan foydalanuvchini
+      // qabul qilsa (yumshoq policy), foydalanuvchi VerifyEmail ekranisiz app'ga kiradi.
+      try {
+        await dispatch(login({ email: data.email, password: data.password })).unwrap();
+        // Login muvaffaqiyatli — RootNavigator avtomatik app'ga o'tadi.
+      } catch (loginErr: any) {
+        // Auto-login muvaffaqiyatsiz. Agar email tasdiqlash kerak bo'lsa — fallback VerifyEmail.
+        if (loginErr?.requiresEmailVerification) {
+          navigation.navigate('VerifyEmail', {
+            email: loginErr.email ?? data.email,
+            password: data.password,
+          });
+        }
+        // Boshqa xatolar authSlice.error orqali ekranda ko'rsatiladi.
+      }
+    } catch {
+      // Register'ning o'zi muvaffaqiyatsiz — xato authSlice.error orqali ko'rsatiladi.
+    }
   };
 
   return (
@@ -82,7 +123,25 @@ const RegisterScreen = () => {
             },
           }}
           render={({ field: { onChange, value } }) => (
-            <Input label="Parol" placeholder="Kamida 8 belgi, A-a-1-!" onChangeText={onChange} value={value} error={errors.password?.message as string} secureTextEntry />
+            <Input
+              label="Parol"
+              placeholder="Kamida 8 belgi, A-a-1-!"
+              onChangeText={onChange}
+              value={value}
+              error={errors.password?.message as string}
+              secureTextEntry={!showPassword}
+              autoCapitalize="none"
+              autoCorrect={false}
+              rightIcon={
+                <TouchableOpacity onPress={togglePasswordVisibility} hitSlop={10}>
+                  <Ionicons
+                    name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                    size={22}
+                    color={colors.textSecondary}
+                  />
+                </TouchableOpacity>
+              }
+            />
           )}
         />
 

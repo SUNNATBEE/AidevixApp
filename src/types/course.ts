@@ -1,10 +1,19 @@
+export interface Instructor {
+  _id: string;
+  username?: string;
+  email?: string;
+  jobTitle?: string;
+  position?: string;
+  avatar?: string;
+}
+
 export interface Course {
   _id: string;
   title: string;
   description: string;
   thumbnail: string;
   price: number;
-  instructor: string;
+  instructor: string | Instructor;
   category: string;
   level: string;
   viewCount: number;

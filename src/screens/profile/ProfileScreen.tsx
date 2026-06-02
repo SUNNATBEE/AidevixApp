@@ -1,16 +1,23 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
-import { useTheme } from '../../theme';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logout } from '../../store/slices/authSlice';
-import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../../theme';
+import { triggerHaptic } from '../../utils/haptics';
 
 const ProfileScreen = ({ navigation }: any) => {
-  const { colors, spacing } = useTheme();
+  const { colors } = useTheme();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
 
+  const goEdit = () => {
+    triggerHaptic('light');
+    navigation.navigate('EditProfile');
+  };
+
   const handleLogout = () => {
+    triggerHaptic('warning');
     dispatch(logout());
   };
 
@@ -26,14 +33,22 @@ const ProfileScreen = ({ navigation }: any) => {
                 {user?.firstName?.[0] || 'U'}
               </Text>
             )}
-            <TouchableOpacity style={[styles.editBadge, { backgroundColor: colors.primary }]}>
-              <Ionicons name="camera" size={16} color="#fff" />
+            <TouchableOpacity
+              style={[styles.editBadge, { backgroundColor: colors.primary, borderColor: colors.card }]}
+              onPress={goEdit}
+              hitSlop={8}
+            >
+              <Ionicons name="camera" size={16} color="#ffffff" />
             </TouchableOpacity>
           </View>
-          <Text style={[styles.name, { color: colors.text }]}>{user?.firstName} {user?.lastName}</Text>
+          <Text style={[styles.name, { color: colors.text }]}>
+            {user?.firstName} {user?.lastName}
+          </Text>
           <Text style={[styles.email, { color: colors.textSecondary }]}>{user?.email}</Text>
           <View style={[styles.rankBadge, { backgroundColor: colors.primary + '20' }]}>
-            <Text style={[styles.rankText, { color: colors.primary }]}>{user?.rankTitle || 'AMATEUR'}</Text>
+            <Text style={[styles.rankText, { color: colors.primary }]}>
+              {user?.rankTitle || 'AMATEUR'}
+            </Text>
           </View>
         </View>
 
@@ -42,38 +57,73 @@ const ProfileScreen = ({ navigation }: any) => {
             <Text style={[styles.statValue, { color: colors.text }]}>{user?.xp || 0}</Text>
             <Text style={[styles.statLabel, { color: colors.textSecondary }]}>XP</Text>
           </View>
-          <View style={styles.statDivider} />
+          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
           <View style={styles.statItem}>
             <Text style={[styles.statValue, { color: colors.text }]}>{user?.streak || 0}</Text>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Kun</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+              Kun
+            </Text>
           </View>
         </View>
       </View>
 
       <View style={styles.menu}>
-        <MenuItem 
-          icon="book" 
-          title="Mening kurslarim" 
-          onPress={() => navigation.navigate('MyCourses')} 
-          colors={colors} 
+        <MenuItem
+          icon="person-circle-outline"
+          title="Profilni tahrirlash"
+          onPress={goEdit}
+          colors={colors}
         />
-        <MenuItem 
-          icon="ribbon" 
-          title="Sertifikatlar" 
-          onPress={() => navigation.navigate('Certificates')} 
-          colors={colors} 
+        <MenuItem
+          icon="book"
+          title="Mening kurslarim"
+          onPress={() => {
+            triggerHaptic('light');
+            navigation.navigate('MyCourses');
+          }}
+          colors={colors}
         />
-        <MenuItem 
-          icon="settings-outline" 
-          title="Sozlamalar" 
-          onPress={() => navigation.navigate('Settings')} 
-          colors={colors} 
+        <MenuItem
+          icon="ribbon-outline"
+          title="Sertifikatlarim"
+          onPress={() => {
+            triggerHaptic('light');
+            navigation.navigate('Certificates');
+          }}
+          colors={colors}
         />
-        <MenuItem 
-          icon="log-out-outline" 
-          title="Chiqish" 
-          onPress={handleLogout} 
-          colors={colors} 
+        <MenuItem
+          icon="people-outline"
+          title="Followerlar"
+          onPress={() => {
+            triggerHaptic('light');
+            navigation.navigate('Follow', { tab: 'followers' });
+          }}
+          colors={colors}
+        />
+        <MenuItem
+          icon="gift-outline"
+          title="Do'st taklif qilish"
+          onPress={() => {
+            triggerHaptic('light');
+            navigation.navigate('Referrals');
+          }}
+          colors={colors}
+        />
+        <MenuItem
+          icon="settings-outline"
+          title="Sozlamalar"
+          onPress={() => {
+            triggerHaptic('light');
+            navigation.navigate('Settings');
+          }}
+          colors={colors}
+        />
+        <MenuItem
+          icon="log-out-outline"
+          title="Chiqish"
+          onPress={handleLogout}
+          colors={colors}
           isDanger
         />
       </View>
@@ -82,13 +132,15 @@ const ProfileScreen = ({ navigation }: any) => {
 };
 
 const MenuItem = ({ icon, title, onPress, colors, isDanger }: any) => (
-  <TouchableOpacity 
-    style={[styles.menuItem, { borderBottomColor: colors.border }]} 
+  <TouchableOpacity
+    style={[styles.menuItem, { borderBottomColor: colors.border }]}
     onPress={onPress}
   >
     <View style={styles.menuItemLeft}>
       <Ionicons name={icon} size={24} color={isDanger ? colors.error : colors.text} />
-      <Text style={[styles.menuItemTitle, { color: isDanger ? colors.error : colors.text }]}>{title}</Text>
+      <Text style={[styles.menuItemTitle, { color: isDanger ? colors.error : colors.text }]}>
+        {title}
+      </Text>
     </View>
     <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
   </TouchableOpacity>
@@ -135,7 +187,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: '#fff',
   },
   name: {
     fontSize: 22,
@@ -175,7 +226,6 @@ const styles = StyleSheet.create({
   statDivider: {
     width: 1,
     height: 30,
-    backgroundColor: '#ccc',
   },
   menu: {
     marginTop: 20,

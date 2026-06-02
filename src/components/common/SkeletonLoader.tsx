@@ -1,43 +1,57 @@
-import React from 'react';
-import { View, StyleSheet, Animated } from 'react-native';
+import React, { useEffect } from 'react';
+import { ViewStyle } from 'react-native';
+import Animated, {
+    Easing,
+    useAnimatedStyle,
+    useSharedValue,
+    withRepeat,
+    withSequence,
+    withTiming,
+} from 'react-native-reanimated';
 import { useTheme } from '../../theme';
 
-const SkeletonLoader = ({ width = '100%', height = 100, borderRadius = 12 }: any) => {
-  const { colors } = useTheme();
-  const animatedValue = new Animated.Value(0);
+interface SkeletonLoaderProps {
+  width?: number | string;
+  height?: number;
+  borderRadius?: number;
+  style?: ViewStyle;
+}
 
-  React.useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(animatedValue, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(animatedValue, {
-          toValue: 0,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
+const SkeletonLoader = ({
+  width = '100%',
+  height = 100,
+  borderRadius = 12,
+  style,
+}: SkeletonLoaderProps) => {
+  const { colors } = useTheme();
+  const opacity = useSharedValue(0.35);
+
+  useEffect(() => {
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(0.75, { duration: 900, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0.35, { duration: 900, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1,
+      false
+    );
   }, []);
 
-  const opacity = animatedValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.3, 0.7],
-  });
+  const animStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
 
   return (
     <Animated.View
       style={[
         {
-          width,
+          width: width as any,
           height,
           backgroundColor: colors.border,
           borderRadius,
-          opacity,
         },
+        animStyle,
+        style,
       ]}
     />
   );
