@@ -65,5 +65,5 @@ foreach ($r in $rules) {
 }
 
 Write-Host ""
-Write-Host "TAYYOR! Endi telefondan http://192.168.100.217:5000 ga ulanish ishlashi kerak." -ForegroundColor Green
+Write-Host "TAYYOR! Endi telefondan http://192.168.81.214:5000 ga ulanish ishlashi kerak." -ForegroundColor Green
 Write-Host "Test: telefon brauzerida shu URL ni oching - javob kelsa, demak hammasi joyida." -ForegroundColor Yellow
