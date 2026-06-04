@@ -8,6 +8,8 @@ import MainTabs from './MainTabs';
 import DailyChallengeScreen from '../screens/challenge/DailyChallengeScreen';
 import { RootStackParamList } from './types';
 import Loader from '../components/common/Loader';
+import { useDailyCheckIn } from '../hooks/useDailyCheckIn';
+import StreakCelebrationModal from '../components/gamification/StreakCelebrationModal';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -18,6 +20,7 @@ const RootNavigator = () => {
   const dispatch = useAppDispatch();
   const { isLoggedIn } = useAppSelector((state) => state.auth);
   const [initialCheckDone, setInitialCheckDone] = useState(false);
+  const { celebration, closeCelebration } = useDailyCheckIn();
 
   useEffect(() => {
     dispatch(checkAuth()).finally(() => setInitialCheckDone(true));
@@ -28,22 +31,30 @@ const RootNavigator = () => {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {isLoggedIn ? (
-          <>
-            <Stack.Screen name="Main" component={MainTabs} />
-            <Stack.Screen
-              name="DailyChallenge"
-              component={DailyChallengeScreen}
-              options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
-            />
-          </>
-        ) : (
-          <Stack.Screen name="Auth" component={AuthStack} />
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          {isLoggedIn ? (
+            <>
+              <Stack.Screen name="Main" component={MainTabs} />
+              <Stack.Screen
+                name="DailyChallenge"
+                component={DailyChallengeScreen}
+                options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+              />
+            </>
+          ) : (
+            <Stack.Screen name="Auth" component={AuthStack} />
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+      <StreakCelebrationModal
+        visible={celebration.visible}
+        streak={celebration.streak}
+        variant={celebration.variant}
+        onClose={closeCelebration}
+      />
+    </>
   );
 };
 

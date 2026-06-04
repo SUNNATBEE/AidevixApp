@@ -9,4 +9,6 @@ export const xpApi = {
   getHistory: () => axiosInstance.get('/xp/history'),
   getStreakStatus: () => axiosInstance.get('/xp/streak-status'),
   useStreakFreeze: () => axiosInstance.post('/xp/streak-freeze'),
+  // Kunlik check-in: server streakni hisoblaydi va yangi qiymatni qaytaradi.
+  checkIn: () => axiosInstance.post('/xp/check-in'),
 };
