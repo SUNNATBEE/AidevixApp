@@ -52,7 +52,7 @@ const ProgressBar = ({
         {
           height,
           borderRadius,
-          backgroundColor: trackColor ?? colors.border,
+          backgroundColor: trackColor ?? colors.muted,
         },
         style,
       ]}

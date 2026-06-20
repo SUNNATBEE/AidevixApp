@@ -34,7 +34,7 @@ const PRESET_AVATARS = [
 ];
 
 const EditProfileScreen = () => {
-  const { colors, spacing, typography } = useTheme();
+  const { colors, spacing, typography, radii } = useTheme();
   const navigation = useNavigation<any>();
   const dispatch = useAppDispatch();
   const user = useAppSelector((s) => s.auth.user);
@@ -142,6 +142,7 @@ const EditProfileScreen = () => {
               // Save vaqtida ham primary rangda turaman — spinner kontrasti uchun.
               // Faqat dirty=false bo'lganda kulrang (tugma o'chiq).
               backgroundColor: dirty ? colors.primary : colors.border,
+              borderRadius: radii.md,
               paddingVertical: spacing.sm,
               paddingHorizontal: spacing.md,
             },
@@ -172,7 +173,7 @@ const EditProfileScreen = () => {
           <View
             style={[
               styles.avatarPreview,
-              { backgroundColor: colors.primary + '20', borderColor: colors.border },
+              { backgroundColor: colors.primarySoft, borderColor: colors.border },
             ]}
           >
             {avatar ? (
@@ -256,7 +257,7 @@ const EditProfileScreen = () => {
         <View
           style={[
             styles.urlRow,
-            { backgroundColor: colors.card, borderColor: colors.border },
+            { backgroundColor: colors.muted, borderColor: colors.border, borderRadius: radii.md },
           ]}
         >
           <Ionicons name="link" size={18} color={colors.textSecondary} style={{ marginLeft: 12 }} />
@@ -313,7 +314,7 @@ const EditProfileScreen = () => {
           placeholderTextColor={colors.textSecondary}
           style={[
             styles.input,
-            { backgroundColor: colors.card, borderColor: colors.border, color: colors.text },
+            { backgroundColor: colors.muted, borderColor: colors.border, borderRadius: radii.md, color: colors.text },
           ]}
         />
 
@@ -325,7 +326,7 @@ const EditProfileScreen = () => {
           placeholderTextColor={colors.textSecondary}
           style={[
             styles.input,
-            { backgroundColor: colors.card, borderColor: colors.border, color: colors.text },
+            { backgroundColor: colors.muted, borderColor: colors.border, borderRadius: radii.md, color: colors.text },
           ]}
         />
 
@@ -334,8 +335,9 @@ const EditProfileScreen = () => {
           style={[
             styles.input,
             {
-              backgroundColor: colors.card,
+              backgroundColor: colors.muted,
               borderColor: colors.border,
+              borderRadius: radii.md,
               opacity: 0.7,
               justifyContent: 'center',
             },

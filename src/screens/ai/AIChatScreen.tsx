@@ -26,7 +26,7 @@ const SUGGESTIONS = [
 ];
 
 const AIChatScreen = () => {
-  const { colors, spacing, typography } = useTheme();
+  const { colors, spacing, typography, radii } = useTheme();
   const dispatch = useAppDispatch();
   const { messages, loading } = useAppSelector((state) => state.chat);
   const [input, setInput] = useState('');
@@ -116,6 +116,7 @@ const AIChatScreen = () => {
               backgroundColor: bubbleBg,
               borderColor,
               borderWidth: isUser ? 0 : 1,
+              borderRadius: radii.lg,
               padding: spacing.md,
             },
             isUser ? styles.userBubble : styles.assistantBubble,
@@ -224,6 +225,7 @@ const AIChatScreen = () => {
                         {
                           backgroundColor: colors.card,
                           borderColor: colors.border,
+                          borderRadius: radii.pill,
                           opacity: pressed ? 0.6 : 1,
                           paddingVertical: spacing.sm,
                           paddingHorizontal: spacing.md,
@@ -265,7 +267,8 @@ const AIChatScreen = () => {
             styles.input,
             {
               color: colors.text,
-              backgroundColor: colors.background,
+              backgroundColor: colors.muted,
+              borderRadius: radii.xl,
               fontSize: typography.sizes.md,
             },
           ]}

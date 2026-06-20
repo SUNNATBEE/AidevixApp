@@ -7,7 +7,7 @@ import { useTheme } from '../../theme';
 import { triggerHaptic } from '../../utils/haptics';
 
 const ProfileScreen = ({ navigation }: any) => {
-  const { colors } = useTheme();
+  const { colors, radii } = useTheme();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
 
@@ -25,7 +25,7 @@ const ProfileScreen = ({ navigation }: any) => {
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <View style={styles.profileInfo}>
-          <View style={[styles.avatarContainer, { backgroundColor: colors.primary + '20' }]}>
+          <View style={[styles.avatarContainer, { backgroundColor: colors.primarySoft }]}>
             {user?.avatar ? (
               <Image source={{ uri: user.avatar }} style={styles.avatar} />
             ) : (
@@ -45,7 +45,7 @@ const ProfileScreen = ({ navigation }: any) => {
             {user?.firstName} {user?.lastName}
           </Text>
           <Text style={[styles.email, { color: colors.textSecondary }]}>{user?.email}</Text>
-          <View style={[styles.rankBadge, { backgroundColor: colors.primary + '20' }]}>
+          <View style={[styles.rankBadge, { backgroundColor: colors.primarySoft, borderRadius: radii.md }]}>
             <Text style={[styles.rankText, { color: colors.primary }]}>
               {user?.rankTitle || 'AMATEUR'}
             </Text>

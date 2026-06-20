@@ -66,7 +66,7 @@ const ForgotPasswordScreen = () => {
               placeholder="mail@example.com"
               onChangeText={onChange}
               value={value}
-              error={errors.email?.message}
+              error={errors.email?.message as string}
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}

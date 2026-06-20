@@ -6,7 +6,6 @@ import { MainTabParamList } from './types';
 import HomeStack from './HomeStack';
 import CoursesStack from './CoursesStack';
 import ProfileStack from './ProfileStack';
-import PromptsScreen from '../screens/prompts/PromptsScreen';
 import LeaderboardScreen from '../screens/leaderboard/LeaderboardScreen';
 import AIChatScreen from '../screens/ai/AIChatScreen';
 
@@ -24,7 +23,6 @@ const MainTabs = () => {
           if (route.name === 'HomeStack') iconName = focused ? 'home' : 'home-outline';
           else if (route.name === 'CoursesStack') iconName = focused ? 'book' : 'book-outline';
           else if (route.name === 'AIChat') iconName = focused ? 'sparkles' : 'sparkles-outline';
-          else if (route.name === 'PromptsStack') iconName = focused ? 'flash' : 'flash-outline';
           else if (route.name === 'Leaderboard') iconName = focused ? 'trophy' : 'trophy-outline';
           else if (route.name === 'ProfileStack') iconName = focused ? 'person' : 'person-outline';
 
@@ -60,15 +58,10 @@ const MainTabs = () => {
         component={AIChatScreen} 
         options={{ title: 'AICoach' }} 
       />
-      <Tab.Screen 
-        name="PromptsStack" 
-        component={PromptsScreen} 
-        options={{ title: 'Promptlar' }} 
-      />
-      <Tab.Screen 
-        name="Leaderboard" 
-        component={LeaderboardScreen} 
-        options={{ title: 'Reyting' }} 
+      <Tab.Screen
+        name="Leaderboard"
+        component={LeaderboardScreen}
+        options={{ title: 'Reyting' }}
       />
       <Tab.Screen
         name="ProfileStack"

@@ -205,7 +205,7 @@ const INFO_CONTENT: Record<TabKey, InfoEntry> = {
 };
 
 const CodePlaygroundScreen = () => {
-  const { colors, spacing } = useTheme();
+  const { colors, spacing, radii } = useTheme();
   const navigation = useNavigation<any>();
 
   // Playground tola-ekran tajriba — pastdagi tab bar ekranni va toast'ni yopib qoladi.
@@ -243,6 +243,10 @@ const CodePlaygroundScreen = () => {
 
   const lineIdRef = useRef(0);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => { if (toastTimerRef.current) clearTimeout(toastTimerRef.current); };
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -440,6 +444,22 @@ const CodePlaygroundScreen = () => {
 
   const currentInfo = INFO_CONTENT[activeTab];
 
+  // Har bir tab o'z theme rangiga ega — ish maydoni tab almashganda shu rangga moslashadi.
+  // Inglizcha brend ranglari emas, theme tokenlari (CLAUDE.md: hardcoded rang yo'q).
+  const langColor = (tab: TabKey) => {
+    switch (tab) {
+      case 'html':
+        return colors.accent; // to'q sariq — skelet
+      case 'css':
+        return colors.primary; // ko'k — dizayn
+      case 'js':
+        return colors.secondary; // teal — funksiya
+      default:
+        return colors.success; // yashil — natija
+    }
+  };
+  const activeColor = langColor(activeTab);
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -448,7 +468,7 @@ const CodePlaygroundScreen = () => {
     >
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <TouchableOpacity
-          style={[styles.headerIconButton, { backgroundColor: colors.card, borderColor: colors.border }]}
+          style={[styles.headerIconButton, { backgroundColor: colors.muted, borderColor: colors.border }]}
           onPress={() => {
             triggerHaptic('light');
             navigation.goBack();
@@ -459,13 +479,13 @@ const CodePlaygroundScreen = () => {
           <Ionicons name="chevron-back" size={20} color={colors.text} />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Code Playground</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Editor</Text>
           <Text style={[styles.headerSub, { color: colors.textSecondary }]} numberOfLines={1}>
             Yozing → Ishga tushiring → Natijani ko'ring
           </Text>
         </View>
         <TouchableOpacity
-          style={[styles.headerIconButton, { backgroundColor: colors.card, borderColor: colors.border }]}
+          style={[styles.headerIconButton, { backgroundColor: colors.muted, borderColor: colors.border }]}
           onPress={() => {
             triggerHaptic('light');
             setShowExamples(true);
@@ -475,7 +495,7 @@ const CodePlaygroundScreen = () => {
           <Ionicons name="library-outline" size={18} color={colors.primary} />
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.runAllButton, { backgroundColor: colors.primary }]}
+          style={[styles.runAllButton, { backgroundColor: colors.success, borderRadius: radii.pill }]}
           onPress={runAll}
           activeOpacity={0.85}
         >
@@ -484,10 +504,11 @@ const CodePlaygroundScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={[styles.tabs, { borderBottomColor: colors.border }]}>
+      <View style={[styles.tabBar, { backgroundColor: colors.muted, borderRadius: radii.lg }]}>
         {(Object.keys(TAB_META) as TabKey[]).map((tab) => {
           const meta = TAB_META[tab];
           const isActive = activeTab === tab;
+          const tabColor = langColor(tab);
           return (
             <TouchableOpacity
               key={tab}
@@ -495,14 +516,19 @@ const CodePlaygroundScreen = () => {
                 triggerHaptic('light');
                 setActiveTab(tab);
               }}
-              style={[styles.tab, isActive && { borderBottomColor: colors.primary, borderBottomWidth: 2 }]}
+              style={[
+                styles.tabPill,
+                { borderRadius: radii.md },
+                isActive && { backgroundColor: tabColor + '22' },
+              ]}
+              activeOpacity={0.7}
             >
               <Ionicons
                 name={meta.icon}
                 size={16}
-                color={isActive ? colors.primary : colors.textSecondary}
+                color={isActive ? tabColor : colors.textSecondary}
               />
-              <Text style={[styles.tabText, { color: isActive ? colors.primary : colors.textSecondary }]}>
+              <Text style={[styles.tabText, { color: isActive ? tabColor : colors.textSecondary }]}>
                 {meta.label}
               </Text>
             </TouchableOpacity>
@@ -511,16 +537,16 @@ const CodePlaygroundScreen = () => {
       </View>
 
       <TouchableOpacity
-        style={[styles.roleBadge, { backgroundColor: colors.card, borderColor: colors.border }]}
+        style={[styles.roleBadge, { backgroundColor: activeColor + '14', borderColor: activeColor + '40', borderRadius: radii.md }]}
         onPress={() => {
           triggerHaptic('light');
           setShowInfo(true);
         }}
         activeOpacity={0.7}
       >
-        <Ionicons name={TAB_META[activeTab].icon} size={14} color={colors.primary} />
+        <Ionicons name={TAB_META[activeTab].icon} size={14} color={activeColor} />
         <Text style={[styles.roleText, { color: colors.textSecondary, flex: 1 }]}>{TAB_META[activeTab].role}</Text>
-        <Ionicons name="information-circle-outline" size={16} color={colors.primary} />
+        <Ionicons name="information-circle-outline" size={16} color={activeColor} />
       </TouchableOpacity>
 
       {currentTab && (
@@ -535,32 +561,37 @@ const CodePlaygroundScreen = () => {
             {SNIPPETS[currentTab].map((snip, idx) => (
               <TouchableOpacity
                 key={`${currentTab}-${idx}`}
-                style={[styles.snippetButton, { backgroundColor: colors.card, borderColor: colors.border }]}
+                style={[styles.snippetButton, { backgroundColor: activeColor + '14', borderColor: activeColor + '33', borderRadius: radii.sm }]}
                 onPress={() => insertSnippet(snip.value)}
                 activeOpacity={0.7}
               >
-                <Text style={[styles.snippetText, { color: colors.text }]}>{snip.label}</Text>
+                <Text style={[styles.snippetText, { color: activeColor }]}>{snip.label}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
 
-          <TextInput
-            multiline
-            style={[styles.editor, { color: colors.text, backgroundColor: colors.card }]}
-            value={currentValue}
-            onChangeText={(t) => currentSetter && currentSetter(t)}
-            onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
-            selection={selection}
-            autoCapitalize="none"
-            autoCorrect={false}
-            spellCheck={false}
-            placeholder={`${TAB_META[activeTab].label} kodini shu yerga yozing...`}
-            placeholderTextColor={colors.textSecondary}
-          />
+          <View style={styles.editorWrap}>
+            <TextInput
+              multiline
+              style={[styles.editor, { color: colors.text, backgroundColor: colors.muted, borderColor: activeColor + '33', borderRadius: radii.md }]}
+              value={currentValue}
+              onChangeText={(t) => currentSetter && currentSetter(t)}
+              onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
+              selection={selection}
+              autoCapitalize="none"
+              autoCorrect={false}
+              spellCheck={false}
+              placeholder={`${TAB_META[activeTab].label} kodini shu yerga yozing...`}
+              placeholderTextColor={colors.textSecondary}
+            />
+            <View pointerEvents="none" style={[styles.langChip, { backgroundColor: activeColor + '22', borderRadius: radii.sm }]}>
+              <Text style={[styles.langChipText, { color: activeColor }]}>{TAB_META[activeTab].label}</Text>
+            </View>
+          </View>
 
           <View style={styles.actionRow}>
             <TouchableOpacity
-              style={[styles.runButton, { backgroundColor: colors.primary, flex: 1 }]}
+              style={[styles.runButton, { backgroundColor: activeColor, flex: 1, borderRadius: radii.md }]}
               onPress={onRunForActive}
               activeOpacity={0.85}
             >
@@ -568,7 +599,7 @@ const CodePlaygroundScreen = () => {
               <Text style={styles.runButtonText}>{runLabel}</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.iconButton, { backgroundColor: colors.primary + '18', borderColor: colors.primary + '55' }]}
+              style={[styles.iconButton, { backgroundColor: colors.primary + '18', borderColor: colors.primary + '55', borderRadius: radii.md }]}
               onPress={() => {
                 triggerHaptic('light');
                 setShowAi(true);
@@ -578,14 +609,14 @@ const CodePlaygroundScreen = () => {
               <Ionicons name="sparkles" size={18} color={colors.primary} />
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.iconButton, { backgroundColor: colors.card, borderColor: colors.border }]}
+              style={[styles.iconButton, { backgroundColor: colors.muted, borderColor: colors.border, borderRadius: radii.md }]}
               onPress={onCopy}
               activeOpacity={0.7}
             >
               <Ionicons name="copy-outline" size={18} color={colors.textSecondary} />
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.iconButton, { backgroundColor: colors.card, borderColor: colors.border }]}
+              style={[styles.iconButton, { backgroundColor: colors.muted, borderColor: colors.border, borderRadius: radii.md }]}
               onPress={onReset}
               activeOpacity={0.7}
             >
@@ -593,8 +624,8 @@ const CodePlaygroundScreen = () => {
             </TouchableOpacity>
           </View>
 
-          <View style={[styles.previewBox, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[styles.previewLabel, { color: colors.textSecondary }]}>Natija</Text>
+          <View style={[styles.previewBox, { backgroundColor: colors.card, borderColor: activeColor + '22', borderRadius: radii.md }]}>
+            <Text style={[styles.previewLabel, { color: activeColor }]}>Natija</Text>
             {currentTab === 'html' && htmlPreview && (
               <WebView originWhitelist={['*']} source={{ html: htmlPreview }} style={styles.webview} />
             )}
@@ -656,7 +687,7 @@ const CodePlaygroundScreen = () => {
       {activeTab === 'output' && (
         <View style={styles.outputSection}>
           <TouchableOpacity
-            style={[styles.runButton, { backgroundColor: colors.primary, marginHorizontal: spacing.md }]}
+            style={[styles.runButton, { backgroundColor: colors.success, marginHorizontal: spacing.md, borderRadius: radii.md }]}
             onPress={runAll}
             activeOpacity={0.85}
           >
@@ -664,7 +695,7 @@ const CodePlaygroundScreen = () => {
             <Text style={styles.runButtonText}>Qayta ishga tushirish</Text>
           </TouchableOpacity>
 
-          <View style={[styles.outputWebViewBox, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <View style={[styles.outputWebViewBox, { backgroundColor: colors.card, borderColor: colors.success + '22', borderRadius: radii.md }]}>
             {fullPreview ? (
               <WebView
                 originWhitelist={['*']}
@@ -685,7 +716,7 @@ const CodePlaygroundScreen = () => {
 
           {consoleLines.length > 0 && (
             <View style={[styles.outputConsole, { backgroundColor: colors.card, borderColor: colors.border }]}>
-              <Text style={[styles.previewLabel, { color: colors.textSecondary }]}>Console</Text>
+              <Text style={[styles.previewLabel, { color: colors.textSecondary }]}>Konsol</Text>
               <ScrollView contentContainerStyle={styles.consoleContent}>
                 {consoleLines.map((line) => (
                   <Text
@@ -697,7 +728,7 @@ const CodePlaygroundScreen = () => {
                           line.level === 'error'
                             ? colors.error
                             : line.level === 'warn'
-                            ? '#f59e0b'
+                            ? colors.accent
                             : colors.text,
                       },
                     ]}
@@ -899,10 +930,16 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   runAllText: { color: '#fff', fontWeight: '600', fontSize: 13 },
-  tabs: { flexDirection: 'row', borderBottomWidth: 1 },
-  tab: {
+  tabBar: {
+    flexDirection: 'row',
+    marginHorizontal: 14,
+    marginTop: 10,
+    padding: 4,
+    gap: 4,
+  },
+  tabPill: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: 9,
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -937,15 +974,23 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
   },
+  editorWrap: { flex: 1.4, minHeight: 140, position: 'relative' },
   editor: {
-    flex: 1.4,
-    minHeight: 140,
+    flex: 1,
     padding: 12,
-    borderRadius: 10,
+    borderWidth: 1,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     fontSize: 13,
     textAlignVertical: 'top',
   },
+  langChip: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  langChipText: { fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
   actionRow: {
     flexDirection: 'row',
     gap: 8,

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, ReactNode, useState } from 'react';
 import { useColorScheme } from 'react-native';
 import { colors } from './colors';
+import { radii } from './radii';
 import { spacing } from './spacing';
 import { typography } from './typography';
 
@@ -10,6 +11,7 @@ export interface ThemeContextType {
   colors: typeof colors.dark;
   spacing: typeof spacing;
   typography: typeof typography;
+  radii: typeof radii;
   isDark: boolean;
   themeMode: ThemeMode;
   setThemeMode: (mode: ThemeMode) => void;
@@ -19,6 +21,7 @@ const ThemeContext = createContext<ThemeContextType>({
   colors: colors.dark,
   spacing,
   typography,
+  radii,
   isDark: true,
   themeMode: 'dark',
   setThemeMode: () => {},
@@ -34,6 +37,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     colors: themeMode === 'amoled' ? colors.amoled : (themeMode === 'light' ? colors.light : colors.dark),
     spacing,
     typography,
+    radii,
     isDark,
     themeMode,
     setThemeMode,

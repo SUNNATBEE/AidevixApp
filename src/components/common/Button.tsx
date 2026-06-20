@@ -1,11 +1,11 @@
 import React from 'react';
-import { 
-  TouchableOpacity, 
-  Text, 
-  StyleSheet, 
-  ActivityIndicator, 
-  ViewStyle, 
-  TextStyle 
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  ViewStyle,
+  TextStyle,
 } from 'react-native';
 import { useTheme } from '../../theme';
 
@@ -21,25 +21,26 @@ interface ButtonProps {
   icon?: React.ReactNode;
 }
 
-const Button = ({ 
-  title, 
-  onPress, 
-  variant = 'primary', 
-  size = 'medium', 
-  loading = false, 
+const Button = ({
+  title,
+  onPress,
+  variant = 'primary',
+  size = 'medium',
+  loading = false,
   disabled = false,
   style,
   textStyle,
-  icon
+  icon,
 }: ButtonProps) => {
-  const { colors, spacing, typography } = useTheme();
+  const { colors, spacing, typography, radii } = useTheme();
 
-  const getVariantStyles = () => {
+  const getVariantStyles = (): ViewStyle => {
     switch (variant) {
+      // Minimal "tinted" tugma — yengil fon, asosiy rangli matn
       case 'secondary':
-        return { backgroundColor: colors.secondary };
+        return { backgroundColor: colors.primarySoft };
       case 'outline':
-        return { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.primary };
+        return { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.border };
       case 'ghost':
         return { backgroundColor: 'transparent' };
       case 'danger':
@@ -49,25 +50,26 @@ const Button = ({
     }
   };
 
-  const getTextStyle = () => {
+  const getTextColor = () => {
     switch (variant) {
+      case 'secondary':
       case 'outline':
-        return { color: colors.primary };
       case 'ghost':
-        return { color: colors.primary };
+        return colors.primary;
       default:
-        return { color: '#ffffff' };
+        return '#ffffff';
     }
   };
 
-  const getSizeStyles = () => {
+  // Izchil balandlik minimal uslubning asosiy belgisi
+  const getSizeStyles = (): ViewStyle => {
     switch (size) {
       case 'small':
-        return { paddingVertical: spacing.xs, paddingHorizontal: spacing.md };
+        return { minHeight: 40, paddingHorizontal: spacing.lg };
       case 'large':
-        return { paddingVertical: spacing.lg, paddingHorizontal: spacing.xxxl };
+        return { minHeight: 56, paddingHorizontal: spacing.xxxl };
       default:
-        return { paddingVertical: spacing.md, paddingHorizontal: spacing.xl };
+        return { minHeight: 48, paddingHorizontal: spacing.xl };
     }
   };
 
@@ -75,25 +77,28 @@ const Button = ({
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled || loading}
+      activeOpacity={0.85}
       style={[
         styles.button,
+        { borderRadius: radii.md, gap: spacing.sm },
         getVariantStyles(),
         getSizeStyles(),
         (disabled || loading) && styles.disabled,
-        style
+        style,
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={getTextStyle().color} />
+        <ActivityIndicator color={getTextColor()} />
       ) : (
         <>
           {icon}
-          <Text style={[
-            styles.text, 
-            getTextStyle(), 
-            { fontSize: typography.sizes[size === 'small' ? 'sm' : 'md'] },
-            textStyle
-          ]}>
+          <Text
+            style={[
+              styles.text,
+              { color: getTextColor(), fontSize: typography.sizes[size === 'small' ? 'sm' : 'md'] },
+              textStyle,
+            ]}
+          >
             {title}
           </Text>
         </>
@@ -104,7 +109,6 @@ const Button = ({
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

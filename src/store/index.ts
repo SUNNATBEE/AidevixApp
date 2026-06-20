@@ -7,7 +7,6 @@ import courseReducer from './slices/courseSlice';
 import enrollmentReducer from './slices/enrollmentSlice';
 import followReducer from './slices/followSlice';
 import offlineReducer from './slices/offlineSlice';
-import promptReducer from './slices/promptSlice';
 import rankingReducer from './slices/rankingSlice';
 import subscriptionReducer from './slices/subscriptionSlice';
 import wishlistReducer from './slices/wishlistSlice';
@@ -16,7 +15,6 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     course: courseReducer,
-    prompt: promptReducer,
     ranking: rankingReducer,
     chat: chatReducer,
     offline: offlineReducer,

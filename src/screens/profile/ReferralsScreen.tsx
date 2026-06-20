@@ -30,7 +30,7 @@ interface ReferralStats {
 }
 
 const ReferralsScreen = () => {
-  const { colors, spacing, typography } = useTheme();
+  const { colors, spacing, typography, radii } = useTheme();
   const navigation = useNavigation<any>();
   const { user } = useAppSelector((s) => s.auth);
 
@@ -109,7 +109,7 @@ const ReferralsScreen = () => {
         <View
           style={[
             styles.banner,
-            { backgroundColor: colors.primary, padding: spacing.xl, marginBottom: spacing.xl },
+            { backgroundColor: colors.primary, borderRadius: radii.xl, padding: spacing.xl, marginBottom: spacing.xl },
           ]}
         >
           <Ionicons name="gift" size={40} color="rgba(255,255,255,0.9)" />
@@ -124,7 +124,7 @@ const ReferralsScreen = () => {
           <View
             style={[
               styles.statCard,
-              { backgroundColor: colors.card, borderColor: colors.border, padding: spacing.lg },
+              { backgroundColor: colors.card, borderColor: colors.border, borderRadius: radii.lg, padding: spacing.lg },
             ]}
           >
             <Text style={[styles.statValue, { color: colors.primary }]}>
@@ -135,7 +135,7 @@ const ReferralsScreen = () => {
           <View
             style={[
               styles.statCard,
-              { backgroundColor: colors.card, borderColor: colors.border, padding: spacing.lg },
+              { backgroundColor: colors.card, borderColor: colors.border, borderRadius: radii.lg, padding: spacing.lg },
             ]}
           >
             <Text style={[styles.statValue, { color: colors.primary }]}>
@@ -157,7 +157,7 @@ const ReferralsScreen = () => {
         <TouchableOpacity
           style={[
             styles.codeBox,
-            { backgroundColor: colors.card, borderColor: colors.primary, padding: spacing.lg },
+            { backgroundColor: colors.card, borderColor: colors.primary, borderRadius: radii.lg, padding: spacing.lg },
           ]}
           onPress={handleCopyCode}
           activeOpacity={0.8}
@@ -170,7 +170,7 @@ const ReferralsScreen = () => {
         <TouchableOpacity
           style={[
             styles.shareBtn,
-            { backgroundColor: colors.primary, marginTop: spacing.md, padding: spacing.lg },
+            { backgroundColor: colors.primary, borderRadius: radii.lg, marginTop: spacing.md, padding: spacing.lg },
           ]}
           onPress={handleShare}
           activeOpacity={0.85}
@@ -205,12 +205,13 @@ const ReferralsScreen = () => {
                   {
                     backgroundColor: colors.card,
                     borderColor: colors.border,
+                    borderRadius: radii.md,
                     padding: spacing.md,
                     marginBottom: spacing.sm,
                   },
                 ]}
               >
-                <View style={[styles.refAvatar, { backgroundColor: colors.primary + '20' }]}>
+                <View style={[styles.refAvatar, { backgroundColor: colors.primarySoft }]}>
                   <Text style={[styles.refLetter, { color: colors.primary }]}>
                     {ref.firstName?.[0] || ref.username?.[0] || '?'}
                   </Text>

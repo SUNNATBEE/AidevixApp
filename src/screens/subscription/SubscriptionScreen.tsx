@@ -27,7 +27,7 @@ const TELEGRAM_URL = 'https://t.me/aidevix';
 const INSTAGRAM_URL = 'https://instagram.com/aidevix.uz';
 
 const SubscriptionScreen = () => {
-  const { colors, spacing, typography } = useTheme();
+  const { colors, spacing, typography, radii } = useTheme();
   const navigation = useNavigation<any>();
   const dispatch = useAppDispatch();
   const { status, loading, verifying, error } = useAppSelector((s) => s.subscription);
@@ -116,11 +116,11 @@ const SubscriptionScreen = () => {
           <View
             style={[
               styles.successBanner,
-              { backgroundColor: '#10b981' + '20', borderColor: '#10b981', padding: spacing.lg },
+              { backgroundColor: colors.success + '20', borderColor: colors.success, borderRadius: radii.lg, padding: spacing.lg },
             ]}
           >
-            <Ionicons name="checkmark-circle" size={24} color="#10b981" />
-            <Text style={[styles.successText, { color: '#10b981' }]}>
+            <Ionicons name="checkmark-circle" size={24} color={colors.success} />
+            <Text style={[styles.successText, { color: colors.success }]}>
               To'liq kirish huquqi mavjud
             </Text>
           </View>
@@ -132,18 +132,21 @@ const SubscriptionScreen = () => {
             styles.step,
             {
               backgroundColor: colors.card,
-              borderColor: tgVerified ? '#10b981' : colors.border,
+              borderColor: tgVerified ? colors.success : colors.border,
+              borderRadius: radii.lg,
               padding: spacing.lg,
               marginBottom: spacing.md,
             },
           ]}
         >
           <View style={styles.stepHeader}>
-            <Ionicons name="logo-telegram" size={32} color="#0088cc" />
+            {/* logo-telegram runtime'da mavjud, lekin bu @expo/vector-icons versiyasining
+                tip unionida yo'q — shuning uchun nuqtali kast */}
+            <Ionicons name={'logo-telegram' as keyof typeof Ionicons.glyphMap} size={32} color="#0088cc" />
             <View style={styles.stepTitleRow}>
               <Text style={[styles.stepTitle, { color: colors.text }]}>1-qadam: Telegram</Text>
               {tgVerified ? (
-                <Ionicons name="checkmark-circle" size={20} color="#10b981" />
+                <Ionicons name="checkmark-circle" size={20} color={colors.success} />
               ) : null}
             </View>
           </View>
@@ -151,7 +154,7 @@ const SubscriptionScreen = () => {
           {!tgVerified ? (
             <>
               <TouchableOpacity
-                style={[styles.openBtn, { backgroundColor: '#0088cc', marginTop: spacing.md }]}
+                style={[styles.openBtn, { backgroundColor: '#0088cc', borderRadius: radii.md, marginTop: spacing.md }]}
                 onPress={() => {
                   triggerHaptic('light');
                   Linking.openURL(TELEGRAM_URL);
@@ -173,7 +176,7 @@ const SubscriptionScreen = () => {
               <View
                 style={[
                   styles.inputRow,
-                  { backgroundColor: colors.background, borderColor: colors.border },
+                  { backgroundColor: colors.muted, borderColor: colors.border, borderRadius: radii.md },
                 ]}
               >
                 <Text style={[styles.atSign, { color: colors.textSecondary }]}>@</Text>
@@ -192,6 +195,7 @@ const SubscriptionScreen = () => {
                   styles.verifyBtn,
                   {
                     backgroundColor: tgUsername.trim() ? colors.primary : colors.border,
+                    borderRadius: radii.md,
                     marginTop: spacing.sm,
                   },
                 ]}
@@ -207,7 +211,7 @@ const SubscriptionScreen = () => {
               </TouchableOpacity>
             </>
           ) : (
-            <Text style={[styles.verifiedText, { color: '#10b981', marginTop: spacing.sm }]}>
+            <Text style={[styles.verifiedText, { color: colors.success, marginTop: spacing.sm }]}>
               ✓ Tasdiqlangan: @{status?.telegram?.username}
             </Text>
           )}
@@ -219,7 +223,8 @@ const SubscriptionScreen = () => {
             styles.step,
             {
               backgroundColor: colors.card,
-              borderColor: igVerified ? '#10b981' : colors.border,
+              borderColor: igVerified ? colors.success : colors.border,
+              borderRadius: radii.lg,
               padding: spacing.lg,
               marginBottom: spacing.md,
             },
@@ -230,7 +235,7 @@ const SubscriptionScreen = () => {
             <View style={styles.stepTitleRow}>
               <Text style={[styles.stepTitle, { color: colors.text }]}>2-qadam: Instagram</Text>
               {igVerified ? (
-                <Ionicons name="checkmark-circle" size={20} color="#10b981" />
+                <Ionicons name="checkmark-circle" size={20} color={colors.success} />
               ) : null}
             </View>
           </View>
@@ -238,7 +243,7 @@ const SubscriptionScreen = () => {
           {!igVerified ? (
             <>
               <TouchableOpacity
-                style={[styles.openBtn, { backgroundColor: '#e1306c', marginTop: spacing.md }]}
+                style={[styles.openBtn, { backgroundColor: '#e1306c', borderRadius: radii.md, marginTop: spacing.md }]}
                 onPress={() => {
                   triggerHaptic('light');
                   Linking.openURL(INSTAGRAM_URL);
@@ -260,7 +265,7 @@ const SubscriptionScreen = () => {
               <View
                 style={[
                   styles.inputRow,
-                  { backgroundColor: colors.background, borderColor: colors.border },
+                  { backgroundColor: colors.muted, borderColor: colors.border, borderRadius: radii.md },
                 ]}
               >
                 <Text style={[styles.atSign, { color: colors.textSecondary }]}>@</Text>
@@ -279,6 +284,7 @@ const SubscriptionScreen = () => {
                   styles.verifyBtn,
                   {
                     backgroundColor: igUsername.trim() ? colors.primary : colors.border,
+                    borderRadius: radii.md,
                     marginTop: spacing.sm,
                   },
                 ]}
@@ -294,14 +300,14 @@ const SubscriptionScreen = () => {
               </TouchableOpacity>
             </>
           ) : (
-            <Text style={[styles.verifiedText, { color: '#10b981', marginTop: spacing.sm }]}>
+            <Text style={[styles.verifiedText, { color: colors.success, marginTop: spacing.sm }]}>
               ✓ Tasdiqlangan: @{status?.instagram?.username}
             </Text>
           )}
         </View>
 
         {error ? (
-          <Text style={[styles.errorText, { color: colors.error ?? '#ef4444' }]}>{error}</Text>
+          <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
         ) : null}
       </ScrollView>
     </KeyboardAvoidingView>

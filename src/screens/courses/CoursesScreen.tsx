@@ -37,7 +37,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 const ALL_CATEGORY = 'all';
 
 const CoursesScreen = ({ navigation }: any) => {
-  const { colors, spacing } = useTheme();
+  const { colors, spacing, radii } = useTheme();
   const dispatch = useAppDispatch();
   const { courses, loading } = useAppSelector((state) => state.course);
   const [search, setSearch] = useState('');
@@ -83,7 +83,7 @@ const CoursesScreen = ({ navigation }: any) => {
           {
             paddingHorizontal: spacing.xl,
             paddingVertical: spacing.md,
-            backgroundColor: isSelected ? colors.primary + '15' : 'transparent',
+            backgroundColor: isSelected ? colors.primarySoft : 'transparent',
           },
         ]}
       >
@@ -107,7 +107,7 @@ const CoursesScreen = ({ navigation }: any) => {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { padding: spacing.xl }]}>
         <Text style={[styles.title, { color: colors.text }]}>Kurslar</Text>
-        <View style={[styles.searchBar, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <View style={[styles.searchBar, { backgroundColor: colors.muted, borderColor: colors.border, borderRadius: radii.md }]}>
           <Ionicons name="search" size={20} color={colors.textSecondary} />
           <TextInput
             placeholder="Kurslarni qidirish..."
@@ -126,6 +126,7 @@ const CoursesScreen = ({ navigation }: any) => {
             {
               backgroundColor: colors.card,
               borderColor: colors.border,
+              borderRadius: radii.md,
               marginTop: spacing.md,
             },
           ]}
@@ -175,7 +176,12 @@ const CoursesScreen = ({ navigation }: any) => {
           <Pressable
             style={[
               styles.modalSheet,
-              { backgroundColor: colors.card, paddingBottom: spacing.xxl },
+              {
+                backgroundColor: colors.card,
+                paddingBottom: spacing.xxl,
+                borderTopLeftRadius: radii.xl,
+                borderTopRightRadius: radii.xl,
+              },
             ]}
             onPress={(e) => e.stopPropagation()}
           >

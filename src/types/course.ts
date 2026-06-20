@@ -22,6 +22,9 @@ export interface Course {
   ratingCount: number;
   isFree: boolean;
   totalDuration: string;
+  // Backend kurs detallari bilan birga bo'lim/videolarni ham qaytarishi mumkin
+  sections?: Section[];
+  videos?: Video[];
 }
 
 export interface Video {

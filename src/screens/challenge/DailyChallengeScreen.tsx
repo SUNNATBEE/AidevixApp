@@ -10,6 +10,9 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import FadeInView from '../../components/common/FadeInView';
+import Loader from '../../components/common/Loader';
+import ProgressBar from '../../components/common/ProgressBar';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
     Challenge,
@@ -55,17 +58,6 @@ const STATIC_CHALLENGES: Challenge[] = [
     status: 'done',
   },
   {
-    _id: 'pomodoro',
-    title: 'Pomodoro sessiyasi',
-    description: '25 daqiqalik fokus rejimida ishlang',
-    reward: 75,
-    icon: 'time',
-    color: '#10b981',
-    progress: 0,
-    target: 1,
-    status: 'not_started',
-  },
-  {
     _id: 'playground',
     title: 'Kod yozish',
     description: 'Playground\'da bitta loyiha yarating',
@@ -98,7 +90,7 @@ const STATUS_META: Record<Status, { label: string; color: string; icon: string }
 };
 
 const DailyChallengeScreen = ({ navigation }: any) => {
-  const { colors, spacing } = useTheme();
+  const { colors, spacing, radii } = useTheme();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
   const { todayChallenges, totalReward, earnedReward, loading, error } = useAppSelector(
@@ -136,7 +128,7 @@ const DailyChallengeScreen = ({ navigation }: any) => {
 
   const renderChallenge = (c: Challenge, index: number) => {
     const status = STATUS_META[c.status as Status] ?? STATUS_META.not_started;
-    const pct = Math.min(100, Math.round((c.progress / c.target) * 100));
+    const pct = c.target > 0 ? Math.min(100, Math.round((c.progress / c.target) * 100)) : 0;
 
     return (
       <FadeInView key={c._id} delay={index * 70}>
@@ -145,7 +137,8 @@ const DailyChallengeScreen = ({ navigation }: any) => {
             styles.card,
             {
               backgroundColor: colors.card,
-              borderColor: c.status === 'done' ? '#10b981' + '40' : colors.border,
+              borderColor: c.status === 'done' ? colors.success + '40' : colors.border,
+              borderRadius: radii.lg,
               padding: spacing.lg,
               marginBottom: spacing.md,
               opacity: c.status === 'done' ? 0.85 : 1,
@@ -153,7 +146,7 @@ const DailyChallengeScreen = ({ navigation }: any) => {
           ]}
         >
           <View style={styles.cardRow}>
-            <View style={[styles.iconBox, { backgroundColor: (c.color || '#6366f1') + '20' }]}>
+            <View style={[styles.iconBox, { backgroundColor: (c.color || colors.primary) + '20', borderRadius: radii.md }]}>
               <Ionicons name={(c.icon as any) || 'star'} size={22} color={c.color || '#6366f1'} />
             </View>
             <View style={styles.cardMeta}>
@@ -172,7 +165,7 @@ const DailyChallengeScreen = ({ navigation }: any) => {
 
           <ProgressBar
             progress={pct}
-            color={c.status === 'done' ? '#10b981' : (c.color || colors.primary)}
+            color={c.status === 'done' ? colors.success : (c.color || colors.primary)}
             delay={index * 70 + 200}
             style={{ marginTop: spacing.md }}
           />
@@ -220,7 +213,7 @@ const DailyChallengeScreen = ({ navigation }: any) => {
             />
           }
         >
-          <View style={[styles.summary, { backgroundColor: colors.primary, padding: spacing.xl }]}>
+          <View style={[styles.summary, { backgroundColor: colors.primary, borderRadius: radii.xl, padding: spacing.xl }]}>
             <View>
               <Text style={styles.summaryLabel}>Mavjud mukofot</Text>
               <Text style={styles.summaryValue}>+{displayTotal} XP</Text>
@@ -237,7 +230,7 @@ const DailyChallengeScreen = ({ navigation }: any) => {
           <View
             style={[
               styles.balanceCard,
-              { backgroundColor: colors.card, borderColor: colors.border, padding: spacing.lg },
+              { backgroundColor: colors.card, borderColor: colors.border, borderRadius: radii.lg, padding: spacing.lg },
             ]}
           >
             <Ionicons name="flash" size={20} color={colors.accent ?? '#f59e0b'} />

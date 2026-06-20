@@ -10,9 +10,15 @@ export type MainTabParamList = {
   HomeStack: undefined;
   CoursesStack: undefined;
   AIChat: undefined;
-  PromptsStack: undefined;
   Leaderboard: undefined;
   ProfileStack: undefined;
+};
+
+export type HomeStackParamList = {
+  Home: undefined;
+  Playground: undefined;
+  Shorts: undefined;
+  Founders: undefined;
 };
 
 export type CourseStackParamList = {

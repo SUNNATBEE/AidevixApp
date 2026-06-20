@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Dimensions, TouchableOpacity } from 'react-native';
-import { Video } from 'expo-av';
+import { ResizeMode, Video } from 'expo-av';
 import { useTheme } from '../../theme';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -21,7 +21,7 @@ const ShortsScreen = () => {
       <Video
         source={{ uri: item.videoUrl }}
         style={styles.video}
-        resizeMode="cover"
+        resizeMode={ResizeMode.COVER}
         shouldPlay={index === currentVisibleIndex}
         isLooping
       />

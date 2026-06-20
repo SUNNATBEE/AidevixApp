@@ -12,15 +12,16 @@ interface CourseCardProps {
 }
 
 const CourseCard = ({ course, onPress, horizontal = false }: CourseCardProps) => {
-  const { colors, spacing, typography } = useTheme();
+  const { colors, spacing, typography, radii } = useTheme();
 
   return (
     <TouchableOpacity 
       style={[
         styles.container, 
         { 
-          backgroundColor: colors.card, 
+          backgroundColor: colors.card,
           borderColor: colors.border,
+          borderRadius: radii.lg,
           width: horizontal ? 280 : '48%',
           marginRight: horizontal ? spacing.md : 0,
           marginBottom: horizontal ? 0 : spacing.md
@@ -45,7 +46,7 @@ const CourseCard = ({ course, onPress, horizontal = false }: CourseCardProps) =>
         
         <View style={styles.footer}>
           <View style={styles.rating}>
-            <Ionicons name="star" size={14} color="#ffd700" />
+            <Ionicons name="star" size={14} color={colors.accent} />
             <Text style={[styles.ratingText, { color: colors.textSecondary }]}>
               {course.rating || 0} ({course.ratingCount || 0})
             </Text>

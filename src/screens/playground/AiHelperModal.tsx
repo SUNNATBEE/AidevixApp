@@ -224,7 +224,7 @@ const AiHelperModal: React.FC<Props> = ({ visible, onClose, html, css, js, activ
 
         <View style={[styles.inputRow, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
           <TextInput
-            style={[styles.input, { color: colors.text, backgroundColor: colors.background }]}
+            style={[styles.input, { color: colors.text, backgroundColor: colors.muted }]}
             value={input}
             onChangeText={setInput}
             placeholder="Savolingizni shu yerga yozing..."

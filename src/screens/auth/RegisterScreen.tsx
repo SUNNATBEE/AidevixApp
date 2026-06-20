@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../theme';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
+import GoogleSignInButton from '../../components/auth/GoogleSignInButton';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigation/types';
@@ -148,8 +149,10 @@ const RegisterScreen = () => {
         {error && <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>}
 
         <Button title="Davom etish" onPress={handleSubmit(onSubmit)} loading={loading} style={styles.button} />
-        
-        <Button 
+
+        <GoogleSignInButton label="Google bilan ro'yxatdan o'tish" />
+
+        <Button
           title="Kirish sahifasiga qaytish" 
           onPress={() => navigation.goBack()} 
           variant="ghost" 

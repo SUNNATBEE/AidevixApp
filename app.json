@@ -25,12 +25,26 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      "expo-notifications"
+      "expo-notifications",
+      "expo-web-browser",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.149350644359-ktgp3aj2qomavd6v5nfn1t7h152746fa"
+        }
+      ]
     ],
     "extra": {
+      "googleAuth": {
+        "webClientId": "149350644359-e5vpjgb99qlacpiadolifnae76qh65d8.apps.googleusercontent.com",
+        "androidClientId": "149350644359-656al7pgio9f81j4374pvtndmnmq4adv.apps.googleusercontent.com",
+        "iosClientId": "149350644359-ktgp3aj2qomavd6v5nfn1t7h152746fa.apps.googleusercontent.com"
+      },
+      "router": {},
       "eas": {
-        "projectId": "your-project-id"
+        "projectId": "cc775564-4657-47bf-891c-5de62de12a30"
       }
-    }
+    },
+    "owner": "abduvoris777"
   }
 }

@@ -18,7 +18,7 @@ import StreakCounter from '../../components/gamification/StreakCounter';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 
 const HomeScreen = ({ navigation }: any) => {
-  const { colors, spacing } = useTheme();
+  const { colors, spacing, radii } = useTheme();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
   const { topCourses, loading } = useAppSelector((state) => state.course);
@@ -46,11 +46,11 @@ const HomeScreen = ({ navigation }: any) => {
           <Text style={[styles.name, { color: colors.text }]}>{user?.firstName || 'O\'quvchi'} 👋</Text>
         </View>
         <TouchableOpacity 
-          style={[styles.streakContainer, { backgroundColor: colors.card, borderColor: colors.border }]}
+          style={[styles.streakContainer, { backgroundColor: colors.card, borderColor: colors.border, borderRadius: radii.pill }]}
           onPress={() => navigation.navigate('Leaderboard')}
         >
           <StreakCounter count={user?.streak || 0} />
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
           <View style={styles.xpBox}>
             <Ionicons name="flash" size={16} color={colors.accent} />
             <Text style={[styles.xpText, { color: colors.text }]}>{user?.xp || 0} XP</Text>
@@ -59,21 +59,20 @@ const HomeScreen = ({ navigation }: any) => {
       </View>
 
       <View style={styles.quickActions}>
-        <ActionIcon name="time" label="Pomodoro" onPress={() => navigation.navigate('FocusMode')} color="#6366f1" />
-        <ActionIcon name="code-slash" label="Editor" onPress={() => navigation.navigate('Playground')} color="#10b981" />
-        <ActionIcon name="play-circle" label="Shorts" onPress={() => navigation.navigate('Shorts')} color="#e1306c" />
-        <ActionIcon name="qr-code" label="Scan" onPress={() => {}} color="#f59e0b" />
+        <ActionIcon name="code-slash" label="Editor" onPress={() => navigation.navigate('Playground')} color={colors.primary} />
+        <ActionIcon name="play-circle" label="Shorts" onPress={() => navigation.navigate('Shorts')} color={colors.secondary} />
+        <ActionIcon name="people" label="Asoschilar" onPress={() => navigation.navigate('Founders')} color={colors.accent} />
       </View>
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Bugungi Challenge</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Bugungi Sinov</Text>
           <TouchableOpacity onPress={() => navigation.navigate('DailyChallenge')}>
             <Text style={{ color: colors.primary }}>Hammasi</Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={[styles.challengeCard, { backgroundColor: colors.primary }]}>
+        <TouchableOpacity style={[styles.challengeCard, { backgroundColor: colors.primary, borderRadius: radii.xl }]}>
           <View style={styles.challengeInfo}>
             <Text style={styles.challengeTitle}>1ta dars ko'rish</Text>
             <Text style={styles.challengeReward}>+100 XP mukofot</Text>
@@ -84,7 +83,7 @@ const HomeScreen = ({ navigation }: any) => {
           <Ionicons name="gift" size={44} color="rgba(255,255,255,0.4)" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.challengeCard, styles.challengeCardSecondary, { backgroundColor: colors.accent ?? '#f59e0b' }]}>
+        <TouchableOpacity style={[styles.challengeCard, styles.challengeCardSecondary, { backgroundColor: colors.accent, borderRadius: radii.xl }]}>
           <View style={styles.challengeInfo}>
             <Text style={styles.challengeTitle}>Kamida 2ta dars ko'rish</Text>
             <Text style={styles.challengeReward}>+200 XP mukofot</Text>
@@ -134,14 +133,17 @@ const HomeScreen = ({ navigation }: any) => {
   );
 };
 
-const ActionIcon = ({ name, label, onPress, color }: any) => (
-  <TouchableOpacity style={styles.actionItem} onPress={onPress}>
-    <View style={[styles.actionBadge, { backgroundColor: color + '15' }]}>
-      <Ionicons name={name} size={24} color={color} />
-    </View>
-    <Text style={styles.actionLabel}>{label}</Text>
-  </TouchableOpacity>
-);
+const ActionIcon = ({ name, label, onPress, color }: any) => {
+  const { colors, radii } = useTheme();
+  return (
+    <TouchableOpacity style={styles.actionItem} onPress={onPress}>
+      <View style={[styles.actionBadge, { backgroundColor: color + '15', borderRadius: radii.lg }]}>
+        <Ionicons name={name} size={24} color={color} />
+      </View>
+      <Text style={[styles.actionLabel, { color: colors.textSecondary }]}>{label}</Text>
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -182,17 +184,18 @@ const styles = StyleSheet.create({
   divider: {
     width: 1,
     height: 15,
-    backgroundColor: 'rgba(128,128,128,0.3)',
     marginHorizontal: 8,
   },
   quickActions: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
+    gap: 32,
     paddingHorizontal: 20,
     marginBottom: 24,
   },
   actionItem: {
     alignItems: 'center',
+    width: 72,
   },
   actionBadge: {
     width: 54,
@@ -205,7 +208,6 @@ const styles = StyleSheet.create({
   actionLabel: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#64748b',
   },
   section: {
     marginBottom: 24,

@@ -36,7 +36,7 @@ const safeNumber = (v: any, fallback = 0): number => {
 };
 
 const CourseDetailScreen = ({ route, navigation }: Props) => {
-  const { colors, spacing } = useTheme();
+  const { colors, spacing, radii } = useTheme();
   const { courseId } = route.params;
 
   const [course, setCourse] = useState<Course | null>(null);
@@ -100,7 +100,7 @@ const CourseDetailScreen = ({ route, navigation }: Props) => {
         </Text>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={[styles.backBtn, { backgroundColor: colors.primary }]}
+          style={[styles.backBtn, { backgroundColor: colors.primary, borderRadius: radii.md }]}
         >
           <Text style={styles.backBtnText}>Orqaga</Text>
         </TouchableOpacity>
@@ -116,6 +116,7 @@ const CourseDetailScreen = ({ route, navigation }: Props) => {
         {
           backgroundColor: colors.card,
           borderColor: colors.border,
+          borderRadius: radii.md,
           padding: spacing.md,
           marginBottom: spacing.sm,
         },
@@ -123,7 +124,7 @@ const CourseDetailScreen = ({ route, navigation }: Props) => {
       onPress={() => openVideo(video)}
       activeOpacity={0.7}
     >
-      <View style={[styles.videoIndex, { backgroundColor: colors.primary + '20' }]}>
+      <View style={[styles.videoIndex, { backgroundColor: colors.primarySoft, borderRadius: radii.md }]}>
         <Text style={[styles.videoIndexText, { color: colors.primary }]}>
           {String(index + 1).padStart(2, '0')}
         </Text>
@@ -196,7 +197,7 @@ const CourseDetailScreen = ({ route, navigation }: Props) => {
 
           <View style={[styles.statsRow, { borderColor: colors.border }]}>
             <View style={styles.statItem}>
-              <Ionicons name="star" size={16} color="#ffd700" />
+              <Ionicons name="star" size={16} color={colors.accent} />
               <Text style={[styles.statText, { color: colors.text }]}>
                 {safeNumber(course.rating)}
               </Text>
@@ -245,7 +246,7 @@ const CourseDetailScreen = ({ route, navigation }: Props) => {
             </Text>
 
             {noLessons && (
-              <View style={[styles.empty, { backgroundColor: colors.card, borderColor: colors.border }]}>
+              <View style={[styles.empty, { backgroundColor: colors.card, borderColor: colors.border, borderRadius: radii.md }]}>
                 <Ionicons name="film-outline" size={32} color={colors.textSecondary} />
                 <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
                   Darslar tez orada qo'shiladi

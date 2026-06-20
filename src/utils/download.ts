@@ -1,4 +1,6 @@
-import * as FileSystem from 'expo-file-system';
+// Expo SDK 54'da klassik API (documentDirectory, createDownloadResumable...)
+// '/legacy' entrypoint'ga ko'chirilgan. Yangi File/Directory API hozircha kerak emas.
+import * as FileSystem from 'expo-file-system/legacy';
 
 export const downloadVideo = async (url: string, videoId: string, onProgress: (progress: number) => void) => {
   const fileUri = `${FileSystem.documentDirectory}${videoId}.mp4`;

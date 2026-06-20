@@ -1,11 +1,11 @@
-import React from 'react';
-import { 
-  View, 
-  TextInput, 
-  Text, 
-  StyleSheet, 
-  ViewStyle, 
-  TextInputProps 
+import React, { useState } from 'react';
+import {
+  View,
+  TextInput,
+  Text,
+  StyleSheet,
+  ViewStyle,
+  TextInputProps,
 } from 'react-native';
 import { useTheme } from '../../theme';
 
@@ -17,39 +17,50 @@ interface InputProps extends TextInputProps {
   rightIcon?: React.ReactNode;
 }
 
-const Input = ({ 
-  label, 
-  error, 
-  containerStyle, 
-  leftIcon, 
-  rightIcon, 
+const Input = ({
+  label,
+  error,
+  containerStyle,
+  leftIcon,
+  rightIcon,
   style,
-  ...props 
+  onFocus,
+  onBlur,
+  ...props
 }: InputProps) => {
-  const { colors, spacing, typography } = useTheme();
+  const { colors, spacing, typography, radii } = useTheme();
+  const [focused, setFocused] = useState(false);
+
+  // Fokus / xato holatlari chegara rangini boshqaradi (minimal: tinch holatда muted)
+  const borderColor = error ? colors.error : focused ? colors.primary : colors.border;
 
   return (
     <View style={[styles.container, containerStyle]}>
       {label && <Text style={[styles.label, { color: colors.textSecondary }]}>{label}</Text>}
-      <View style={[
-        styles.inputContainer, 
-        { 
-          backgroundColor: colors.card, 
-          borderColor: error ? colors.error : colors.border,
-          paddingHorizontal: spacing.md
-        }
-      ]}>
+      <View
+        style={[
+          styles.inputContainer,
+          {
+            backgroundColor: colors.muted,
+            borderColor,
+            borderRadius: radii.md,
+            paddingHorizontal: spacing.md,
+            gap: spacing.sm,
+          },
+        ]}
+      >
         {leftIcon}
         <TextInput
-          style={[
-            styles.input, 
-            { 
-              color: colors.text,
-              fontSize: typography.sizes.md,
-            },
-            style
-          ]}
+          style={[styles.input, { color: colors.text, fontSize: typography.sizes.md }, style]}
           placeholderTextColor={colors.textSecondary}
+          onFocus={(e) => {
+            setFocused(true);
+            onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setFocused(false);
+            onBlur?.(e);
+          }}
           {...props}
         />
         {rightIcon}
@@ -70,7 +81,6 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     height: 52,
-    borderRadius: 12,
     borderWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',

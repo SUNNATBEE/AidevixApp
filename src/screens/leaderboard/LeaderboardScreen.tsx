@@ -64,7 +64,7 @@ const normalize = (
 };
 
 const LeaderboardScreen = () => {
-  const { colors, spacing, typography } = useTheme();
+  const { colors, spacing, typography, radii } = useTheme();
   const dispatch = useAppDispatch();
   const { users, weeklyUsers, period, loading, refreshing, error, currentUserPosition } =
     useAppSelector((state) => state.ranking);
@@ -117,12 +117,12 @@ const LeaderboardScreen = () => {
         style={[
           styles.row,
           {
-            backgroundColor: item.isCurrent ? colors.primary + '15' : colors.card,
+            backgroundColor: item.isCurrent ? colors.primarySoft : colors.card,
             borderColor: item.isCurrent ? colors.primary : colors.border,
             paddingVertical: spacing.md,
             paddingHorizontal: spacing.lg,
             marginBottom: spacing.sm,
-            borderRadius: 14,
+            borderRadius: radii.lg,
             borderWidth: item.isCurrent ? 1.5 : StyleSheet.hairlineWidth,
           },
         ]}
@@ -155,7 +155,7 @@ const LeaderboardScreen = () => {
           <View
             style={[
               styles.avatarPlaceholder,
-              { backgroundColor: colors.primary + '20' },
+              { backgroundColor: colors.primarySoft },
             ]}
           >
             <Text style={[styles.initial, { color: colors.primary }]}>{item.initial}</Text>
@@ -200,7 +200,7 @@ const LeaderboardScreen = () => {
     <View style={{ paddingHorizontal: spacing.lg, paddingTop: spacing.lg }}>
       {Array.from({ length: 8 }).map((_, i) => (
         <View key={i} style={{ marginBottom: spacing.sm }}>
-          <SkeletonLoader height={60} borderRadius={14} />
+          <SkeletonLoader height={60} borderRadius={radii.lg} />
         </View>
       ))}
     </View>
@@ -330,7 +330,7 @@ const LeaderboardScreen = () => {
             },
           ]}
         >
-          <View style={[styles.stickyAvatar, { backgroundColor: colors.primary + '20' }]}>
+          <View style={[styles.stickyAvatar, { backgroundColor: colors.primarySoft }]}>
             <Text style={[styles.initial, { color: colors.primary }]}>
               {(currentUser?.firstName?.[0] || currentUser?.username?.[0] || '?').toUpperCase()}
             </Text>

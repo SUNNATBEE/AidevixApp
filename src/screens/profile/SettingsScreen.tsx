@@ -18,7 +18,7 @@ import { triggerHaptic } from '../../utils/haptics';
 type ThemeMode = 'light' | 'dark' | 'amoled';
 
 const SettingsScreen = () => {
-  const { colors, spacing, typography, themeMode, setThemeMode } = useTheme();
+  const { colors, spacing, typography, radii, themeMode, setThemeMode } = useTheme();
   const navigation = useNavigation<any>();
   const dispatch = useAppDispatch();
   const user = useAppSelector((s) => s.auth.user);
@@ -90,6 +90,7 @@ const SettingsScreen = () => {
         styles.row,
         {
           backgroundColor: colors.card,
+          borderRadius: radii.lg,
           opacity: pressed ? 0.7 : 1,
           paddingVertical: spacing.md,
           paddingHorizontal: spacing.lg,
@@ -100,7 +101,8 @@ const SettingsScreen = () => {
         style={[
           styles.iconWrap,
           {
-            backgroundColor: danger ? colors.error + '18' : colors.primary + '18',
+            backgroundColor: danger ? colors.error + '18' : colors.primarySoft,
+            borderRadius: radii.md,
           },
         ]}
       >
@@ -151,8 +153,9 @@ const SettingsScreen = () => {
       style={[
         styles.segmented,
         {
-          backgroundColor: colors.background,
+          backgroundColor: colors.muted,
           borderColor: colors.border,
+          borderRadius: radii.pill,
           padding: 4,
         },
       ]}
@@ -167,6 +170,7 @@ const SettingsScreen = () => {
               styles.segment,
               {
                 backgroundColor: active ? colors.primary : 'transparent',
+                borderRadius: radii.pill,
                 paddingVertical: spacing.xs + 2,
                 paddingHorizontal: spacing.md,
               },

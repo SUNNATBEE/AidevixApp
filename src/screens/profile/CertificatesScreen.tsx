@@ -11,13 +11,16 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import AnimatedPressable from '../../components/common/AnimatedPressable';
+import CardSkeleton from '../../components/common/CardSkeleton';
+import FadeInView from '../../components/common/FadeInView';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { Certificate, fetchMyCertificates } from '../../store/slices/certificateSlice';
 import { useTheme } from '../../theme';
 import { triggerHaptic } from '../../utils/haptics';
 
 const CertificatesScreen = () => {
-  const { colors, spacing, typography } = useTheme();
+  const { colors, spacing, typography, radii } = useTheme();
   const navigation = useNavigation<any>();
   const dispatch = useAppDispatch();
   const { items, loading, error } = useAppSelector((s) => s.certificate);
@@ -52,13 +55,14 @@ const CertificatesScreen = () => {
           {
             backgroundColor: colors.card,
             borderColor: colors.border,
+            borderRadius: radii.lg,
             padding: spacing.lg,
             marginBottom: spacing.md,
           },
         ]}
       >
         <View style={styles.cardTop}>
-          <View style={[styles.iconBox, { backgroundColor: colors.primary + '20' }]}>
+          <View style={[styles.iconBox, { backgroundColor: colors.primarySoft, borderRadius: radii.lg }]}>
             <Ionicons name="ribbon" size={28} color={colors.primary} />
           </View>
           <View style={styles.cardInfo}>
@@ -82,7 +86,7 @@ const CertificatesScreen = () => {
         <AnimatedPressable
           style={[
             styles.downloadBtn,
-            { backgroundColor: colors.primary, marginTop: spacing.md },
+            { backgroundColor: colors.primary, borderRadius: radii.md, marginTop: spacing.md },
           ]}
           onPress={() => handleDownload(item)}
         >

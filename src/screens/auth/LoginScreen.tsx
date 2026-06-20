@@ -17,6 +17,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { login, clearAuthError } from '../../store/slices/authSlice';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
+import GoogleSignInButton from '../../components/auth/GoogleSignInButton';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigation/types';
@@ -134,12 +135,14 @@ const LoginScreen = () => {
 
           {error && <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>}
 
-          <Button 
-            title="Kirish" 
-            onPress={handleSubmit(onSubmit)} 
+          <Button
+            title="Kirish"
+            onPress={handleSubmit(onSubmit)}
             loading={loading}
             style={styles.loginButton}
           />
+
+          <GoogleSignInButton />
 
           <View style={styles.footer}>
             <Text style={{ color: colors.textSecondary }}>Hali ro'yxatdan o'tmaganmisiz? </Text>

@@ -73,6 +73,26 @@ export const login = createAsyncThunk(
   }
 );
 
+// Google bilan kirish — mobil ilova Google id_token oladi, backend uni tekshiradi
+// va odatiy login javobini (user + token body'da) qaytaradi. Token axiosInstance
+// interceptori orqali allaqachon saqlangan bo'ladi — shu yerda faqat o'qiymiz.
+export const googleLogin = createAsyncThunk(
+  'auth/googleLogin',
+  async ({ idToken, referralCode }: { idToken: string; referralCode?: string }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post('/auth/google', { idToken, referralCode });
+      const user = response.data?.data?.user ?? response.data?.user ?? null;
+      const token = await storage.getToken();
+      if (!user || !token) {
+        return rejectWithValue('Google orqali kirishda xatolik yuz berdi');
+      }
+      return { user, token };
+    } catch (error: any) {
+      return rejectWithValue(pickError(error, 'Google orqali kirishda xatolik'));
+    }
+  }
+);
+
 // Backend ro'yxatdan o'tishda sessiya bermaydi — email tasdiqlash kodini
 // yuboradi (requiresEmailVerification). RegisterScreen auto-login urinadi;
 // agar muvaffaqiyatsiz bo'lsa, fallback sifatida VerifyEmail ekraniga o'tadi.
@@ -283,6 +303,21 @@ const authSlice = createSlice({
         } else {
           state.error = (payload as string) || 'Kirish amalga oshmadi';
         }
+      })
+      .addCase(googleLogin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(googleLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.isLoggedIn = true;
+      })
+      .addCase(googleLogin.rejected, (state, action) => {
+        state.loading = false;
+        state.isLoggedIn = false;
+        state.error = (action.payload as string) || 'Google orqali kirish amalga oshmadi';
       })
       .addCase(register.pending, (state) => {
         state.loading = true;

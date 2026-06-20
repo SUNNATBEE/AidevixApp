@@ -10,6 +10,9 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import AnimatedPressable from '../../components/common/AnimatedPressable';
+import CardSkeleton from '../../components/common/CardSkeleton';
+import FadeInView from '../../components/common/FadeInView';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
     fetchMyFollowers,
@@ -23,7 +26,7 @@ import { triggerHaptic } from '../../utils/haptics';
 type TabKey = 'followers' | 'following';
 
 const FollowScreen = () => {
-  const { colors, spacing, typography } = useTheme();
+  const { colors, spacing, typography, radii } = useTheme();
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const dispatch = useAppDispatch();
@@ -66,12 +69,13 @@ const FollowScreen = () => {
             {
               backgroundColor: colors.card,
               borderColor: colors.border,
+              borderRadius: radii.lg,
               padding: spacing.md,
               marginBottom: spacing.sm,
             },
           ]}
         >
-          <View style={[styles.avatar, { backgroundColor: colors.primary + '20' }]}>
+          <View style={[styles.avatar, { backgroundColor: colors.primarySoft }]}>
             {item.avatar ? (
               <Image source={{ uri: item.avatar }} style={styles.avatarImg} />
             ) : (
@@ -97,6 +101,7 @@ const FollowScreen = () => {
               {
                 backgroundColor: isFollowing ? colors.card : colors.primary,
                 borderColor: isFollowing ? colors.border : colors.primary,
+                borderRadius: radii.pill,
               },
             ]}
             onPress={() => handleToggleFollow(item._id)}
@@ -147,6 +152,7 @@ const FollowScreen = () => {
           {
             backgroundColor: active ? colors.primary : colors.card,
             borderColor: active ? colors.primary : colors.border,
+            borderRadius: radii.pill,
             paddingVertical: spacing.sm,
             paddingHorizontal: spacing.lg,
           },

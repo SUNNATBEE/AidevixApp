@@ -40,7 +40,7 @@ const extractCourseIds = (history: any[]): string[] => {
 };
 
 const MyCoursesScreen = () => {
-  const { colors, spacing, typography } = useTheme();
+  const { colors, spacing, typography, radii } = useTheme();
   const navigation = useNavigation<any>();
   const downloadedCourses = useAppSelector((s) => s.offline.downloadedCourses);
 
@@ -139,7 +139,7 @@ const MyCoursesScreen = () => {
             marginBottom: spacing.md,
           }}
         >
-          <SkeletonLoader height={200} borderRadius={16} />
+          <SkeletonLoader height={200} borderRadius={radii.lg} />
         </View>
       ))}
     </View>
@@ -186,6 +186,7 @@ const MyCoursesScreen = () => {
             styles.browseBtn,
             {
               backgroundColor: colors.primary,
+              borderRadius: radii.md,
               marginTop: spacing.lg,
               paddingVertical: spacing.md,
               paddingHorizontal: spacing.xl,
@@ -221,6 +222,7 @@ const MyCoursesScreen = () => {
           {
             backgroundColor: active ? colors.primary : colors.card,
             borderColor: active ? colors.primary : colors.border,
+            borderRadius: radii.pill,
             paddingVertical: spacing.sm,
             paddingHorizontal: spacing.md,
           },

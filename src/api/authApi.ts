@@ -3,6 +3,8 @@ import axiosInstance from './axiosInstance';
 export const authApi = {
   register: (data: any) => axiosInstance.post('/auth/register', data),
   login: (data: any) => axiosInstance.post('/auth/login', data),
+  googleLogin: (idToken: string, referralCode?: string) =>
+    axiosInstance.post('/auth/google', { idToken, referralCode }),
   refreshToken: (refreshToken: string) => axiosInstance.post('/auth/refresh-token', { refreshToken }),
   logout: () => axiosInstance.post('/auth/logout'),
   me: () => axiosInstance.get('/auth/me'),
