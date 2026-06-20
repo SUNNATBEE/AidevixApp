@@ -4,6 +4,9 @@ import { useTheme } from '../../theme';
 import { Ionicons } from '@expo/vector-icons';
 import { rankingApi } from '../../api/rankingApi';
 import SkeletonLoader from '../common/SkeletonLoader';
+import Card from '../common/Card';
+import IconBadge from '../common/IconBadge';
+import FadeInView from '../common/FadeInView';
 import { RANKS } from '../../utils/constants';
 
 const safeText = (v: any, fallback = ''): string => {
@@ -146,20 +149,17 @@ const ActivityFeed = () => {
 
         {!loading &&
           !error &&
-          items.map((item) => (
-            <View
-              key={item.id}
-              style={[styles.item, { backgroundColor: colors.card, borderColor: colors.border }]}
-            >
-              <View style={[styles.iconContainer, { backgroundColor: item.color + '20' }]}>
-                <Ionicons name={item.icon as any} size={20} color={item.color} />
-              </View>
-              <View style={styles.textContainer}>
-                <Text style={[styles.activityText, { color: colors.text }]} numberOfLines={2}>
-                  <Text style={styles.userName}>{item.user}</Text> {item.action}
-                </Text>
-              </View>
-            </View>
+          items.map((item, i) => (
+            <FadeInView key={item.id} delay={i * 60} style={{ marginBottom: 12 }}>
+              <Card style={styles.item}>
+                <IconBadge name={item.icon as any} color={item.color} size={40} iconSize={20} />
+                <View style={styles.textContainer}>
+                  <Text style={[styles.activityText, { color: colors.text }]} numberOfLines={2}>
+                    <Text style={styles.userName}>{item.user}</Text> {item.action}
+                  </Text>
+                </View>
+              </Card>
+            </FadeInView>
           ))}
       </View>
     </View>
@@ -186,18 +186,8 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 12,
     padding: 12,
-    borderRadius: 16,
-    borderWidth: 1,
-    marginBottom: 12,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
   },
   textContainer: {
     flex: 1,

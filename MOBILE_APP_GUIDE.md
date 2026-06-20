@@ -1,3 +1,4 @@
+
 # AIDEVIX — Mobil (Native) Ilova Qo'llanmasi
 
 > Bu hujjat **mavjud aidevix.uz veb-saytini** native ilovaga ko'chirish uchun

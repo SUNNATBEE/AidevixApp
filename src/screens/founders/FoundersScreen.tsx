@@ -9,7 +9,9 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme';
+import FadeInView from '../../components/common/FadeInView';
 import { triggerHaptic } from '../../utils/haptics';
 import { FOUNDERS, Founder } from '../../data/founders';
 
@@ -51,7 +53,7 @@ const FoundersScreen = () => {
   const navigation = useNavigation<any>();
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView edges={['top']} style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { paddingHorizontal: spacing.xl }]}>
         <TouchableOpacity
           onPress={() => {
@@ -91,8 +93,9 @@ const FoundersScreen = () => {
         </Text>
 
         {FOUNDERS.map((founder, index) => (
-          <View
+          <FadeInView
             key={founder.id}
+            delay={index * 70}
             style={[
               styles.card,
               {
@@ -162,17 +165,16 @@ const FoundersScreen = () => {
             >
               {founder.task}
             </Text>
-          </View>
+          </FadeInView>
         ))}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
-    paddingTop: 60,
     paddingBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',

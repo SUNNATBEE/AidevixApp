@@ -11,6 +11,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AnimatedPressable from '../../components/common/AnimatedPressable';
 import CardSkeleton from '../../components/common/CardSkeleton';
 import FadeInView from '../../components/common/FadeInView';
@@ -119,7 +120,7 @@ const CertificatesScreen = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView edges={['top']} style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { paddingHorizontal: spacing.xl }]}>
         <TouchableOpacity
           onPress={() => {
@@ -157,14 +158,13 @@ const CertificatesScreen = () => {
         }
         showsVerticalScrollIndicator={false}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
-    paddingTop: 60,
     paddingBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',

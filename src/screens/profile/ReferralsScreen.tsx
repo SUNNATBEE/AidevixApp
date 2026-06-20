@@ -10,9 +10,12 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { authApi } from '../../api/authApi';
 import { useAppSelector } from '../../store/hooks';
 import { useTheme } from '../../theme';
+import FadeInView from '../../components/common/FadeInView';
+import GradientCard from '../../components/common/GradientCard';
 import { triggerHaptic } from '../../utils/haptics';
 
 interface ReferralStats {
@@ -79,7 +82,7 @@ const ReferralsScreen = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView edges={['top']} style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { paddingHorizontal: spacing.xl }]}>
         <TouchableOpacity
           onPress={() => {
@@ -106,18 +109,15 @@ const ReferralsScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         {/* Banner */}
-        <View
-          style={[
-            styles.banner,
-            { backgroundColor: colors.primary, borderRadius: radii.xl, padding: spacing.xl, marginBottom: spacing.xl },
-          ]}
-        >
-          <Ionicons name="gift" size={40} color="rgba(255,255,255,0.9)" />
-          <Text style={styles.bannerTitle}>Har bir do'st uchun XP oling</Text>
-          <Text style={styles.bannerSub}>
-            Do'stingiz ro'yxatdan o'tganda ikkalangiz ham bonus XP olasiz
-          </Text>
-        </View>
+        <FadeInView delay={0}>
+          <GradientCard variant="brand" style={[styles.banner, { marginBottom: spacing.xl }]}>
+            <Ionicons name="gift" size={40} color="rgba(255,255,255,0.95)" />
+            <Text style={styles.bannerTitle}>Har bir do'st uchun XP oling</Text>
+            <Text style={styles.bannerSub}>
+              Do'stingiz ro'yxatdan o'tganda ikkalangiz ham bonus XP olasiz
+            </Text>
+          </GradientCard>
+        </FadeInView>
 
         {/* Stats */}
         <View style={styles.statsRow}>
@@ -197,9 +197,10 @@ const ReferralsScreen = () => {
             >
               Taklif qilinganlar ({stats!.referrals.length})
             </Text>
-            {stats!.referrals.map((ref) => (
-              <View
+            {stats!.referrals.map((ref, i) => (
+              <FadeInView
                 key={ref._id}
+                delay={i * 50}
                 style={[
                   styles.refRow,
                   {
@@ -230,12 +231,12 @@ const ReferralsScreen = () => {
                     +{ref.xpEarned}
                   </Text>
                 </View>
-              </View>
+              </FadeInView>
             ))}
           </>
         ) : null}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -243,7 +244,6 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   header: {
-    paddingTop: 60,
     paddingBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',

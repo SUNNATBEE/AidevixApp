@@ -6,6 +6,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../theme';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
+import FadeInView from '../../components/common/FadeInView';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { verifyEmailCode, login, resendVerificationCode, clearAuthError } from '../../store/slices/authSlice';
 import { triggerHaptic } from '../../utils/haptics';
@@ -62,10 +63,12 @@ const VerifyEmailScreen = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background, padding: 24, paddingTop: 60 }}>
-      <Text style={[styles.title, { color: colors.text }]}>Emailni tasdiqlang</Text>
-      <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-        {email} manziliga yuborilgan 6 xonali kodni kiriting.
-      </Text>
+      <FadeInView delay={0}>
+        <Text style={[styles.title, { color: colors.text }]}>Emailni tasdiqlang</Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+          {email} manziliga yuborilgan 6 xonali kodni kiriting.
+        </Text>
+      </FadeInView>
 
       <Controller
         control={control}

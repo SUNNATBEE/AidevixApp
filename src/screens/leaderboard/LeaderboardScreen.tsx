@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import FadeInView from '../../components/common/FadeInView';
 import { useTheme } from '../../theme';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
@@ -64,7 +66,7 @@ const normalize = (
 };
 
 const LeaderboardScreen = () => {
-  const { colors, spacing, typography, radii } = useTheme();
+  const { colors, gradients, spacing, typography, radii } = useTheme();
   const dispatch = useAppDispatch();
   const { users, weeklyUsers, period, loading, refreshing, error, currentUserPosition } =
     useAppSelector((state) => state.ranking);
@@ -110,10 +112,11 @@ const LeaderboardScreen = () => {
   const showStickyPosition =
     !!currentUser && !inListCurrentUser && !!currentUserPosition?.rank;
 
-  const renderItem: ListRenderItem<NormalizedUser> = ({ item }) => {
+  const renderItem: ListRenderItem<NormalizedUser> = ({ item, index }) => {
     const medalColor = item.rank >= 1 && item.rank <= 3 ? MEDAL_COLORS[item.rank - 1] : null;
     return (
-      <View
+      <FadeInView
+        delay={Math.min(index, 10) * 50}
         style={[
           styles.row,
           {
@@ -192,7 +195,7 @@ const LeaderboardScreen = () => {
           <Text style={[styles.xpValue, { color: colors.primary }]}>{item.xp}</Text>
           <Text style={[styles.xpLabel, { color: colors.textSecondary }]}>XP</Text>
         </View>
-      </View>
+      </FadeInView>
     );
   };
 
@@ -264,11 +267,13 @@ const LeaderboardScreen = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View
+      <LinearGradient
+        colors={gradients.brand}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
         style={[
           styles.header,
           {
-            backgroundColor: colors.primary,
             paddingHorizontal: spacing.xl,
             paddingBottom: spacing.xl,
           },
@@ -295,7 +300,7 @@ const LeaderboardScreen = () => {
           <PeriodTab label="Haftalik" value="weekly" />
           <PeriodTab label="Umumiy" value="allTime" />
         </View>
-      </View>
+      </LinearGradient>
 
       <FlatList
         data={list}

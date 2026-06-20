@@ -15,9 +15,11 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { updateProfile } from '../../store/slices/authSlice';
+import FadeInView from '../../components/common/FadeInView';
 import { triggerHaptic } from '../../utils/haptics';
 
 // Native image picker yo'q — DiceBear orqali oldindan yaratilgan avatar to'plami.
@@ -108,6 +110,7 @@ const EditProfileScreen = () => {
       style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
+      <SafeAreaView edges={['top']} style={styles.container}>
       <View style={[styles.header, { paddingHorizontal: spacing.xl }]}>
         <TouchableOpacity
           onPress={() => {
@@ -169,7 +172,7 @@ const EditProfileScreen = () => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.avatarSection}>
+        <FadeInView style={styles.avatarSection}>
           <View
             style={[
               styles.avatarPreview,
@@ -209,7 +212,7 @@ const EditProfileScreen = () => {
               </Text>
             </TouchableOpacity>
           ) : null}
-        </View>
+        </FadeInView>
 
         <Text
           style={[
@@ -356,6 +359,7 @@ const EditProfileScreen = () => {
           Email o'zgartirib bo'lmaydi
         </Text>
       </ScrollView>
+      </SafeAreaView>
     </KeyboardAvoidingView>
   );
 };
@@ -377,7 +381,6 @@ const FieldLabel = ({ text, color }: { text: string; color: string }) => (
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
-    paddingTop: 60,
     paddingBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',

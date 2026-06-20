@@ -21,6 +21,7 @@ import {
     verifyTelegramSubscription,
 } from '../../store/slices/subscriptionSlice';
 import { useTheme } from '../../theme';
+import FadeInView from '../../components/common/FadeInView';
 import { triggerHaptic } from '../../utils/haptics';
 
 const TELEGRAM_URL = 'https://t.me/aidevix';
@@ -104,12 +105,14 @@ const SubscriptionScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <Text style={[styles.title, { color: colors.text, fontSize: typography.sizes.xxxl ?? 28 }]}>
-          Obuna bo'lish
-        </Text>
-        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-          Videolarni ko'rish uchun Telegram va Instagram kanallarimizga obuna bo'lishingiz kerak.
-        </Text>
+        <FadeInView delay={0}>
+          <Text style={[styles.title, { color: colors.text, fontSize: typography.sizes.xxxl ?? 28 }]}>
+            Obuna bo'lish
+          </Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            Videolarni ko'rish uchun Telegram va Instagram kanallarimizga obuna bo'lishingiz kerak.
+          </Text>
+        </FadeInView>
 
         {/* Full access banner */}
         {hasFullAccess ? (
@@ -127,7 +130,8 @@ const SubscriptionScreen = () => {
         ) : null}
 
         {/* Telegram */}
-        <View
+        <FadeInView
+          delay={60}
           style={[
             styles.step,
             {
@@ -215,10 +219,11 @@ const SubscriptionScreen = () => {
               ✓ Tasdiqlangan: @{status?.telegram?.username}
             </Text>
           )}
-        </View>
+        </FadeInView>
 
         {/* Instagram */}
-        <View
+        <FadeInView
+          delay={120}
           style={[
             styles.step,
             {
@@ -304,7 +309,7 @@ const SubscriptionScreen = () => {
               ✓ Tasdiqlangan: @{status?.instagram?.username}
             </Text>
           )}
-        </View>
+        </FadeInView>
 
         {error ? (
           <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>

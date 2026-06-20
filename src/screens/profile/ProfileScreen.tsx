@@ -1,13 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import FadeInView from '../../components/common/FadeInView';
+import GradientCard from '../../components/common/GradientCard';
+import ListItem from '../../components/common/ListItem';
+import Screen from '../../components/common/Screen';
+import StatCard from '../../components/common/StatCard';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logout } from '../../store/slices/authSlice';
 import { useTheme } from '../../theme';
 import { triggerHaptic } from '../../utils/haptics';
 
 const ProfileScreen = ({ navigation }: any) => {
-  const { colors, radii } = useTheme();
+  const { colors, spacing, radii } = useTheme();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
 
@@ -16,167 +21,81 @@ const ProfileScreen = ({ navigation }: any) => {
     navigation.navigate('EditProfile');
   };
 
+  const nav = (screen: string, params?: any) => () => {
+    triggerHaptic('light');
+    navigation.navigate(screen, params);
+  };
+
   const handleLogout = () => {
     triggerHaptic('warning');
     dispatch(logout());
   };
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
-        <View style={styles.profileInfo}>
-          <View style={[styles.avatarContainer, { backgroundColor: colors.primarySoft }]}>
+    <Screen scroll padded>
+      {/* Gradient profil header */}
+      <FadeInView delay={0}>
+        <GradientCard variant="brand" glow style={{ alignItems: 'center', paddingVertical: spacing.xxl }}>
+          <View style={[styles.avatarContainer, { backgroundColor: 'rgba(255,255,255,0.18)' }]}>
             {user?.avatar ? (
               <Image source={{ uri: user.avatar }} style={styles.avatar} />
             ) : (
-              <Text style={[styles.avatarText, { color: colors.primary }]}>
-                {user?.firstName?.[0] || 'U'}
-              </Text>
+              <Text style={styles.avatarText}>{user?.firstName?.[0] || 'U'}</Text>
             )}
             <TouchableOpacity
-              style={[styles.editBadge, { backgroundColor: colors.primary, borderColor: colors.card }]}
+              style={[styles.editBadge, { backgroundColor: '#fff' }]}
               onPress={goEdit}
               hitSlop={8}
             >
-              <Ionicons name="camera" size={16} color="#ffffff" />
+              <Ionicons name="camera" size={15} color={colors.primary} />
             </TouchableOpacity>
           </View>
-          <Text style={[styles.name, { color: colors.text }]}>
+          <Text style={styles.name}>
             {user?.firstName} {user?.lastName}
           </Text>
-          <Text style={[styles.email, { color: colors.textSecondary }]}>{user?.email}</Text>
-          <View style={[styles.rankBadge, { backgroundColor: colors.primarySoft, borderRadius: radii.md }]}>
-            <Text style={[styles.rankText, { color: colors.primary }]}>
-              {user?.rankTitle || 'AMATEUR'}
-            </Text>
+          <Text style={styles.email}>{user?.email}</Text>
+          <View style={[styles.rankBadge, { borderRadius: radii.pill }]}>
+            <Ionicons name="shield-checkmark" size={13} color="#fff" />
+            <Text style={styles.rankText}>{user?.rankTitle || 'AMATEUR'}</Text>
           </View>
-        </View>
+        </GradientCard>
+      </FadeInView>
 
-        <View style={styles.statsRow}>
-          <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: colors.text }]}>{user?.xp || 0}</Text>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>XP</Text>
-          </View>
-          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-          <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: colors.text }]}>{user?.streak || 0}</Text>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-              Kun
-            </Text>
-          </View>
+      {/* Statistika */}
+      <FadeInView delay={60}>
+        <View style={[styles.statsRow, { marginTop: spacing.lg }]}>
+          <StatCard icon="flash" value={(user?.xp || 0).toLocaleString()} label="XP ball" color={colors.accent} />
+          <StatCard icon="flame" value={user?.streak || 0} label="Kunlik streak" color={colors.error} />
         </View>
-      </View>
+      </FadeInView>
 
-      <View style={styles.menu}>
-        <MenuItem
-          icon="person-circle-outline"
-          title="Profilni tahrirlash"
-          onPress={goEdit}
-          colors={colors}
-        />
-        <MenuItem
-          icon="book"
-          title="Mening kurslarim"
-          onPress={() => {
-            triggerHaptic('light');
-            navigation.navigate('MyCourses');
-          }}
-          colors={colors}
-        />
-        <MenuItem
-          icon="ribbon-outline"
-          title="Sertifikatlarim"
-          onPress={() => {
-            triggerHaptic('light');
-            navigation.navigate('Certificates');
-          }}
-          colors={colors}
-        />
-        <MenuItem
-          icon="people-outline"
-          title="Followerlar"
-          onPress={() => {
-            triggerHaptic('light');
-            navigation.navigate('Follow', { tab: 'followers' });
-          }}
-          colors={colors}
-        />
-        <MenuItem
-          icon="gift-outline"
-          title="Do'st taklif qilish"
-          onPress={() => {
-            triggerHaptic('light');
-            navigation.navigate('Referrals');
-          }}
-          colors={colors}
-        />
-        <MenuItem
-          icon="settings-outline"
-          title="Sozlamalar"
-          onPress={() => {
-            triggerHaptic('light');
-            navigation.navigate('Settings');
-          }}
-          colors={colors}
-        />
-        <MenuItem
-          icon="log-out-outline"
-          title="Chiqish"
-          onPress={handleLogout}
-          colors={colors}
-          isDanger
-        />
-      </View>
-    </ScrollView>
+      {/* Menyu */}
+      <FadeInView delay={120}>
+        <View style={[styles.menu, { marginTop: spacing.lg, gap: spacing.sm }]}>
+          <ListItem icon="person-circle-outline" title="Profilni tahrirlash" onPress={goEdit} />
+          <ListItem icon="book" iconColor={colors.secondary} title="Mening kurslarim" onPress={nav('MyCourses')} />
+          <ListItem icon="ribbon-outline" iconColor={colors.accent} title="Sertifikatlarim" onPress={nav('Certificates')} />
+          <ListItem icon="people-outline" title="Followerlar" onPress={nav('Follow', { tab: 'followers' })} />
+          <ListItem icon="gift-outline" iconColor={colors.success} title="Do'st taklif qilish" onPress={nav('Referrals')} />
+          <ListItem icon="settings-outline" title="Sozlamalar" onPress={nav('Settings')} />
+          <ListItem icon="log-out-outline" title="Chiqish" onPress={handleLogout} danger chevron={false} />
+        </View>
+      </FadeInView>
+    </Screen>
   );
 };
 
-const MenuItem = ({ icon, title, onPress, colors, isDanger }: any) => (
-  <TouchableOpacity
-    style={[styles.menuItem, { borderBottomColor: colors.border }]}
-    onPress={onPress}
-  >
-    <View style={styles.menuItemLeft}>
-      <Ionicons name={icon} size={24} color={isDanger ? colors.error : colors.text} />
-      <Text style={[styles.menuItemTitle, { color: isDanger ? colors.error : colors.text }]}>
-        {title}
-      </Text>
-    </View>
-    <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
-  </TouchableOpacity>
-);
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingTop: 60,
-    paddingBottom: 24,
-    alignItems: 'center',
-    borderBottomWidth: 1,
-  },
-  profileInfo: {
-    alignItems: 'center',
-  },
   avatarContainer: {
     width: 100,
     height: 100,
     borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
-    position: 'relative',
+    marginBottom: 14,
   },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-  },
-  avatarText: {
-    fontSize: 40,
-    fontWeight: 'bold',
-  },
+  avatar: { width: 100, height: 100, borderRadius: 50 },
+  avatarText: { fontSize: 40, fontWeight: 'bold', color: '#fff' },
   editBadge: {
     position: 'absolute',
     bottom: 0,
@@ -186,66 +105,21 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 3,
   },
-  name: {
-    fontSize: 22,
-    fontWeight: '700',
-    marginBottom: 4,
-  },
-  email: {
-    fontSize: 14,
-    marginBottom: 12,
-  },
+  name: { fontSize: 22, fontWeight: '800', color: '#fff' },
+  email: { fontSize: 14, marginTop: 2, color: 'rgba(255,255,255,0.85)' },
   rankBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: 'rgba(255,255,255,0.2)',
     paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginBottom: 24,
+    paddingVertical: 5,
+    marginTop: 12,
   },
-  rankText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  statsRow: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-around',
-    paddingHorizontal: 40,
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  statLabel: {
-    fontSize: 12,
-  },
-  statDivider: {
-    width: 1,
-    height: 30,
-  },
-  menu: {
-    marginTop: 20,
-    paddingHorizontal: 20,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-  },
-  menuItemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  menuItemTitle: {
-    fontSize: 16,
-    marginLeft: 16,
-  },
+  rankText: { fontSize: 12, fontWeight: 'bold', color: '#fff', letterSpacing: 0.5 },
+  statsRow: { flexDirection: 'row', gap: 12 },
+  menu: {},
 });
 
 export default ProfileScreen;

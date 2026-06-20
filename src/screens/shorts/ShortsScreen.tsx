@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Dimensions } from 'react-native';
 import { ResizeMode, Video } from 'expo-av';
 import { useTheme } from '../../theme';
 import { Ionicons } from '@expo/vector-icons';
+import AnimatedPressable from '../../components/common/AnimatedPressable';
+import { triggerHaptic } from '../../utils/haptics';
 
 const { width, height } = Dimensions.get('window');
 
@@ -58,10 +60,14 @@ const ShortsScreen = () => {
 };
 
 const ActionButton = ({ name, label }: any) => (
-  <TouchableOpacity style={styles.actionItem}>
+  <AnimatedPressable
+    style={styles.actionItem}
+    scaleDown={0.85}
+    onPress={() => triggerHaptic('light')}
+  >
     <Ionicons name={name} size={30} color="#fff" />
     <Text style={styles.actionLabel}>{label}</Text>
-  </TouchableOpacity>
+  </AnimatedPressable>
 );
 
 const styles = StyleSheet.create({

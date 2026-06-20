@@ -11,12 +11,15 @@ import {
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme';
 import { useAppSelector } from '../../store/hooks';
 import { Course } from '../../types/course';
 import { xpApi } from '../../api/xpApi';
 import { courseApi } from '../../api/courseApi';
 import CourseCard from '../../components/course/CourseCard';
+import FadeInView from '../../components/common/FadeInView';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import { triggerHaptic } from '../../utils/haptics';
 
@@ -125,8 +128,13 @@ const MyCoursesScreen = () => {
     navigation.navigate('CoursesStack', { screen: 'Courses' });
   };
 
-  const renderItem: ListRenderItem<Course> = ({ item }) => (
-    <CourseCard course={item} onPress={openCourse} />
+  const renderItem: ListRenderItem<Course> = ({ item, index }) => (
+    <Animated.View
+      entering={FadeInDown.delay(index * 50).springify().damping(14)}
+      style={{ width: '48%' }}
+    >
+      <CourseCard course={item} onPress={openCourse} />
+    </Animated.View>
   );
 
   const renderSkeleton = () => (
@@ -249,8 +257,8 @@ const MyCoursesScreen = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.header, { paddingHorizontal: spacing.xl }]}>
+    <SafeAreaView edges={['top']} style={[styles.container, { backgroundColor: colors.background }]}>
+      <FadeInView style={[styles.header, { paddingHorizontal: spacing.xl }]}>
         <TouchableOpacity
           onPress={() => {
             triggerHaptic('light');
@@ -272,7 +280,7 @@ const MyCoursesScreen = () => {
         >
           Mening kurslarim
         </Text>
-      </View>
+      </FadeInView>
 
       <View style={[styles.tabsRow, { paddingHorizontal: spacing.xl, marginTop: spacing.md }]}>
         <TabButton
@@ -313,14 +321,13 @@ const MyCoursesScreen = () => {
         }
         showsVerticalScrollIndicator={false}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
-    paddingTop: 60,
     flexDirection: 'row',
     alignItems: 'center',
   },

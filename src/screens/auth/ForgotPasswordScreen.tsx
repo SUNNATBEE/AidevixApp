@@ -6,6 +6,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../theme';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
+import FadeInView from '../../components/common/FadeInView';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { requestPasswordReset, clearAuthError } from '../../store/slices/authSlice';
 import { triggerHaptic } from '../../utils/haptics';
@@ -48,10 +49,12 @@ const ForgotPasswordScreen = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.container}>
-        <Text style={[styles.title, { color: colors.text }]}>Parolni tiklash</Text>
-        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-          Email manzilingizni kiriting, biz sizga 6 xonali tasdiqlash kodini yuboramiz.
-        </Text>
+        <FadeInView delay={0}>
+          <Text style={[styles.title, { color: colors.text }]}>Parolni tiklash</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            Email manzilingizni kiriting, biz sizga 6 xonali tasdiqlash kodini yuboramiz.
+          </Text>
+        </FadeInView>
 
         <Controller
           control={control}

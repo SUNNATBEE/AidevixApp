@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../theme';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
+import FadeInView from '../../components/common/FadeInView';
 import GoogleSignInButton from '../../components/auth/GoogleSignInButton';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -68,10 +69,12 @@ const RegisterScreen = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={[styles.title, { color: colors.text }]}>Ro'yxatdan o'tish</Text>
-        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-          Aidevix oilasiga qo'shiling
-        </Text>
+        <FadeInView delay={0}>
+          <Text style={[styles.title, { color: colors.text }]}>Ro'yxatdan o'tish</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            Aidevix oilasiga qo'shiling
+          </Text>
+        </FadeInView>
 
         <Controller
           control={control}

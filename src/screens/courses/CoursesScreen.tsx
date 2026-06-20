@@ -9,10 +9,13 @@ import {
   Modal,
   Pressable,
 } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchCourses } from '../../store/slices/courseSlice';
 import CourseCard from '../../components/course/CourseCard';
+import FadeInView from '../../components/common/FadeInView';
 import Loader from '../../components/common/Loader';
 import { Ionicons } from '@expo/vector-icons';
 import { CATEGORIES } from '../../utils/constants';
@@ -65,11 +68,16 @@ const CoursesScreen = ({ navigation }: any) => {
     setModalVisible(false);
   };
 
-  const renderItem = ({ item }: any) => (
-    <CourseCard
-      course={item}
-      onPress={(id) => navigation.navigate('CourseDetail', { courseId: id })}
-    />
+  const renderItem = ({ item, index }: any) => (
+    <Animated.View
+      entering={FadeInDown.delay(index * 50).springify().damping(14)}
+      style={{ width: '48%' }}
+    >
+      <CourseCard
+        course={item}
+        onPress={(id) => navigation.navigate('CourseDetail', { courseId: id })}
+      />
+    </Animated.View>
   );
 
   const renderCategoryRow = (value: string, label: string) => {
@@ -104,8 +112,8 @@ const CoursesScreen = ({ navigation }: any) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.header, { padding: spacing.xl }]}>
+    <SafeAreaView edges={['top']} style={[styles.container, { backgroundColor: colors.background }]}>
+      <FadeInView style={[styles.header, { padding: spacing.xl }]}>
         <Text style={[styles.title, { color: colors.text }]}>Kurslar</Text>
         <View style={[styles.searchBar, { backgroundColor: colors.muted, borderColor: colors.border, borderRadius: radii.md }]}>
           <Ionicons name="search" size={20} color={colors.textSecondary} />
@@ -140,7 +148,7 @@ const CoursesScreen = ({ navigation }: any) => {
           </Text>
           <Ionicons name="chevron-down" size={18} color={colors.textSecondary} />
         </TouchableOpacity>
-      </View>
+      </FadeInView>
 
       {loading && courses.length === 0 ? (
         <Loader fullScreen />
@@ -209,7 +217,7 @@ const CoursesScreen = ({ navigation }: any) => {
           </Pressable>
         </Pressable>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -217,9 +225,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    paddingTop: 60,
-  },
+  header: {},
   title: {
     fontSize: 28,
     fontWeight: '700',

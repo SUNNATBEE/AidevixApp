@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '../../theme';
-import { useAppSelector } from '../../store/hooks';
+import FadeInView from '../../components/common/FadeInView';
 // import { Video } from 'expo-av'; // Using expo-av as requested or react-native-video
 
 const VideoPlayerScreen = ({ route }: any) => {
@@ -10,16 +10,16 @@ const VideoPlayerScreen = ({ route }: any) => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Video maydoni — playback mantig'i shu yerga keladi, qora fon saqlanadi */}
       <View style={styles.videoContainer}>
-        <Text style={{ color: '#fff' }}>Video pleer (Bunny.net)</Text>
-        {/* Actual video player implementation would go here */}
+        <Text style={{ color: 'rgba(255,255,255,0.6)' }}>Video pleer (Bunny.net)</Text>
       </View>
-      <View style={styles.content}>
+      <FadeInView style={[styles.content, { padding: spacing.xl }]}>
         <Text style={[styles.title, { color: colors.text }]}>Video darslik</Text>
         <Text style={[styles.desc, { color: colors.textSecondary }]}>
           Ushbu darsda biz AI platformamizdan qanday samarali foydalanishni o'rganamiz.
         </Text>
-      </View>
+      </FadeInView>
     </View>
   );
 };

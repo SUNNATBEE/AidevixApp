@@ -13,6 +13,8 @@ import { useTheme } from '../../theme';
 import { courseApi } from '../../api/courseApi';
 import { Course, Section, Video } from '../../types/course';
 import Loader from '../../components/common/Loader';
+import FadeInView from '../../components/common/FadeInView';
+import AnimatedPressable from '../../components/common/AnimatedPressable';
 import { triggerHaptic } from '../../utils/haptics';
 
 interface Props {
@@ -109,8 +111,9 @@ const CourseDetailScreen = ({ route, navigation }: Props) => {
   }
 
   const renderVideoRow = (video: Video, index: number) => (
-    <TouchableOpacity
+    <AnimatedPressable
       key={video._id}
+      scaleDown={0.98}
       style={[
         styles.videoRow,
         {
@@ -122,7 +125,6 @@ const CourseDetailScreen = ({ route, navigation }: Props) => {
         },
       ]}
       onPress={() => openVideo(video)}
-      activeOpacity={0.7}
     >
       <View style={[styles.videoIndex, { backgroundColor: colors.primarySoft, borderRadius: radii.md }]}>
         <Text style={[styles.videoIndexText, { color: colors.primary }]}>
@@ -143,7 +145,7 @@ const CourseDetailScreen = ({ route, navigation }: Props) => {
         )}
       </View>
       <Ionicons name="play-circle" size={28} color={colors.primary} />
-    </TouchableOpacity>
+    </AnimatedPressable>
   );
 
   const hasSections = sections.length > 0;
@@ -169,7 +171,7 @@ const CourseDetailScreen = ({ route, navigation }: Props) => {
           </TouchableOpacity>
         </View>
 
-        <View style={[styles.content, { padding: spacing.xl }]}>
+        <FadeInView style={[styles.content, { padding: spacing.xl }]}>
           <Text style={[styles.category, { color: colors.primary }]}>
             {safeText(course.category).toUpperCase()}
             {course.level ? `  ·  ${safeText(course.level)}` : ''}
@@ -270,7 +272,7 @@ const CourseDetailScreen = ({ route, navigation }: Props) => {
               </View>
             )}
           </View>
-        </View>
+        </FadeInView>
       </ScrollView>
     </View>
   );

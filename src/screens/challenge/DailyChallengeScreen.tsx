@@ -11,6 +11,7 @@ import {
     View,
 } from 'react-native';
 import FadeInView from '../../components/common/FadeInView';
+import GradientCard from '../../components/common/GradientCard';
 import Loader from '../../components/common/Loader';
 import ProgressBar from '../../components/common/ProgressBar';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -213,7 +214,7 @@ const DailyChallengeScreen = ({ navigation }: any) => {
             />
           }
         >
-          <View style={[styles.summary, { backgroundColor: colors.primary, borderRadius: radii.xl, padding: spacing.xl }]}>
+          <GradientCard variant="brand" style={styles.summary}>
             <View>
               <Text style={styles.summaryLabel}>Mavjud mukofot</Text>
               <Text style={styles.summaryValue}>+{displayTotal} XP</Text>
@@ -221,8 +222,8 @@ const DailyChallengeScreen = ({ navigation }: any) => {
                 {doneCount}/{challenges.length} bajarildi · {displayEarned} XP olindi
               </Text>
             </View>
-            <Ionicons name="gift" size={56} color="rgba(255,255,255,0.35)" />
-          </View>
+            <Ionicons name="gift" size={56} color="rgba(255,255,255,0.4)" />
+          </GradientCard>
 
           <Text style={[styles.sectionLabel, { color: colors.textSecondary, marginTop: spacing.xl }]}>
             Sizning XP balansingiz

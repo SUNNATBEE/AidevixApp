@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../theme';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
+import FadeInView from '../../components/common/FadeInView';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { verifyResetCode, resetPassword, clearAuthError } from '../../store/slices/authSlice';
 import { triggerHaptic } from '../../utils/haptics';
@@ -65,10 +66,12 @@ const ResetPasswordScreen = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.container}>
-        <Text style={[styles.title, { color: colors.text }]}>Yangi parol</Text>
-        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-          {email} ga yuborilgan 6 xonali kodni va yangi parolni kiriting.
-        </Text>
+        <FadeInView delay={0}>
+          <Text style={[styles.title, { color: colors.text }]}>Yangi parol</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            {email} ga yuborilgan 6 xonali kodni va yangi parolni kiriting.
+          </Text>
+        </FadeInView>
 
         <Controller
           control={control}

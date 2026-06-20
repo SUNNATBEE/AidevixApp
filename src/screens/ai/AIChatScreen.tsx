@@ -12,7 +12,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { useTheme } from '../../theme';
+import { shadow, useTheme } from '../../theme';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { sendMessage, addMessage, clearChat, Message } from '../../store/slices/chatSlice';
 import { Ionicons } from '@expo/vector-icons';
@@ -120,6 +120,7 @@ const AIChatScreen = () => {
               padding: spacing.md,
             },
             isUser ? styles.userBubble : styles.assistantBubble,
+            !isUser && shadow('sm', colors.shadow),
           ]}
         >
           <Text

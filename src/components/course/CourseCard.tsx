@@ -1,9 +1,10 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
-import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../theme';
 import { Course } from '../../types/course';
+import Card from '../common/Card';
 
 interface CourseCardProps {
   course: Course;
@@ -12,22 +13,17 @@ interface CourseCardProps {
 }
 
 const CourseCard = ({ course, onPress, horizontal = false }: CourseCardProps) => {
-  const { colors, spacing, typography, radii } = useTheme();
+  const { colors, spacing } = useTheme();
 
   return (
-    <TouchableOpacity 
-      style={[
-        styles.container, 
-        { 
-          backgroundColor: colors.card,
-          borderColor: colors.border,
-          borderRadius: radii.lg,
-          width: horizontal ? 280 : '48%',
-          marginRight: horizontal ? spacing.md : 0,
-          marginBottom: horizontal ? 0 : spacing.md
-        }
-      ]}
+    <Card
+      noPadding
       onPress={() => onPress(course._id)}
+      style={{
+        width: horizontal ? 280 : '100%',
+        marginRight: horizontal ? spacing.md : 0,
+        marginBottom: horizontal ? 0 : spacing.md,
+      }}
     >
       <Image
         source={{ uri: course.thumbnail }}
@@ -37,13 +33,10 @@ const CourseCard = ({ course, onPress, horizontal = false }: CourseCardProps) =>
       />
       <View style={styles.content}>
         <Text style={[styles.category, { color: colors.primary }]}>{course.category.toUpperCase()}</Text>
-        <Text 
-          style={[styles.title, { color: colors.text }]} 
-          numberOfLines={2}
-        >
+        <Text style={[styles.title, { color: colors.text }]} numberOfLines={2}>
           {course.title}
         </Text>
-        
+
         <View style={styles.footer}>
           <View style={styles.rating}>
             <Ionicons name="star" size={14} color={colors.accent} />
@@ -56,16 +49,11 @@ const CourseCard = ({ course, onPress, horizontal = false }: CourseCardProps) =>
           </Text>
         </View>
       </View>
-    </TouchableOpacity>
+    </Card>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    borderRadius: 16,
-    borderWidth: 1,
-    overflow: 'hidden',
-  },
   thumbnail: {
     width: '100%',
     height: 120,

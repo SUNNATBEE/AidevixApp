@@ -17,6 +17,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { login, clearAuthError } from '../../store/slices/authSlice';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
+import FadeInView from '../../components/common/FadeInView';
 import GoogleSignInButton from '../../components/auth/GoogleSignInButton';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -67,9 +68,9 @@ const LoginScreen = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
-          <Image 
-            source={require('../../../assets/images/icon.png')} 
+        <FadeInView delay={0} style={styles.header}>
+          <Image
+            source={require('../../../assets/images/icon.png')}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -77,9 +78,9 @@ const LoginScreen = () => {
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
             Aidevix — AI bilan dasturlashni o'rganing
           </Text>
-        </View>
+        </FadeInView>
 
-        <View style={styles.form}>
+        <FadeInView delay={120} style={styles.form}>
           <Controller
             control={control}
             name="email"
@@ -150,7 +151,7 @@ const LoginScreen = () => {
               <Text style={{ color: colors.primary, fontWeight: 'bold' }}>Ro'yxatdan o'tish</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </FadeInView>
       </ScrollView>
     </KeyboardAvoidingView>
   );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,22 +6,46 @@ import {
   ScrollView,
   TouchableOpacity,
   Pressable,
+  Switch,
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../../theme';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logout } from '../../store/slices/authSlice';
+import FadeInView from '../../components/common/FadeInView';
 import { triggerHaptic } from '../../utils/haptics';
+import {
+  scheduleDailyStreakReminder,
+  cancelStreakReminder,
+} from '../../services/notifications';
 
 type ThemeMode = 'light' | 'dark' | 'amoled';
+
+const NOTIF_KEY = 'settings:streakReminder';
 
 const SettingsScreen = () => {
   const { colors, spacing, typography, radii, themeMode, setThemeMode } = useTheme();
   const navigation = useNavigation<any>();
   const dispatch = useAppDispatch();
   const user = useAppSelector((s) => s.auth.user);
+
+  const [notifOn, setNotifOn] = useState(true);
+
+  useEffect(() => {
+    AsyncStorage.getItem(NOTIF_KEY).then((v) => setNotifOn(v !== 'false'));
+  }, []);
+
+  const handleNotifToggle = async (next: boolean) => {
+    triggerHaptic('light');
+    setNotifOn(next);
+    await AsyncStorage.setItem(NOTIF_KEY, String(next));
+    if (next) await scheduleDailyStreakReminder(20, 0);
+    else await cancelStreakReminder();
+  };
 
   const handleLogout = () => {
     Alert.alert(
@@ -200,7 +224,7 @@ const SettingsScreen = () => {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView edges={['top']} style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { paddingHorizontal: spacing.xl }]}>
         <TouchableOpacity
           onPress={() => {
@@ -231,53 +255,75 @@ const SettingsScreen = () => {
         contentContainerStyle={{ paddingBottom: spacing.huge }}
         showsVerticalScrollIndicator={false}
       >
-        <SectionHeader title="Akkaunt" />
-        <Row
-          icon="person-circle-outline"
-          title="Profilni tahrirlash"
-          subtitle={
-            user
-              ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email
-              : ''
-          }
-          onPress={handleEditProfile}
-        />
+        <FadeInView delay={0}>
+          <SectionHeader title="Akkaunt" />
+          <Row
+            icon="person-circle-outline"
+            title="Profilni tahrirlash"
+            subtitle={
+              user
+                ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email
+                : ''
+            }
+            onPress={handleEditProfile}
+          />
+        </FadeInView>
 
-        <SectionHeader title="Ko'rinish" />
-        <Row
-          icon="color-palette-outline"
-          title="Mavzu"
-          subtitle="Yorug', qora yoki amoled"
-          right={
-            <SegmentedPicker
-              value={themeMode}
-              onChange={handleTheme}
-              options={[
-                { value: 'light', label: "Yorug'", icon: 'sunny-outline' },
-                { value: 'dark', label: 'Qora', icon: 'moon-outline' },
-                { value: 'amoled', label: 'AMOLED', icon: 'contrast-outline' },
-              ]}
-            />
-          }
-        />
+        <FadeInView delay={80}>
+          <SectionHeader title="Ko'rinish" />
+          <Row
+            icon="color-palette-outline"
+            title="Mavzu"
+            subtitle="Yorug', qora yoki amoled"
+            right={
+              <SegmentedPicker
+                value={themeMode}
+                onChange={handleTheme}
+                options={[
+                  { value: 'light', label: "Yorug'", icon: 'sunny-outline' },
+                  { value: 'dark', label: 'Qora', icon: 'moon-outline' },
+                  { value: 'amoled', label: 'AMOLED', icon: 'contrast-outline' },
+                ]}
+              />
+            }
+          />
+        </FadeInView>
 
-        <SectionHeader title="Xavfsizlik" />
-        <Row
-          icon="log-out-outline"
-          title="Akauntdan chiqish"
-          subtitle={user?.email}
-          onPress={handleLogout}
-          danger
-        />
+        <FadeInView delay={160}>
+          <SectionHeader title="Eslatmalar" />
+          <Row
+            icon="notifications-outline"
+            title="Kunlik streak eslatmasi"
+            subtitle="Har kuni 20:00 da xabar"
+            right={
+              <Switch
+                value={notifOn}
+                onValueChange={handleNotifToggle}
+                trackColor={{ false: colors.muted, true: colors.primary }}
+                thumbColor="#ffffff"
+              />
+            }
+          />
+        </FadeInView>
+
+        <FadeInView delay={240}>
+          <SectionHeader title="Xavfsizlik" />
+          <Row
+            icon="log-out-outline"
+            title="Akauntdan chiqish"
+            subtitle={user?.email}
+            onPress={handleLogout}
+            danger
+          />
+        </FadeInView>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
-    paddingTop: 60,
     paddingBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
