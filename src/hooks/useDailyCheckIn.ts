@@ -10,6 +10,7 @@ import {
   getLastCheckInKey,
   setLastCheckInKey,
 } from '../utils/checkInGuard';
+import { refreshStreakReminders } from '../services/notifications';
 import type { StreakVariant } from '../components/gamification/StreakCelebrationModal';
 
 interface CelebrationState {
@@ -44,6 +45,9 @@ export const useDailyCheckIn = () => {
 
       // Server bilan muvaffaqiyatli aloqa bo'ldi — bugungi kunni belgilaymiz.
       await setLastCheckInKey(today);
+
+      // Bugun check-in bo'ldi — bugungi streak eslatmasini bekor qilamiz (bezovta qilmaslik).
+      refreshStreakReminders(true).catch(() => {});
 
       // Streak sonini darhol UI'ga yozamiz (Home/Profil avtomatik yangilanadi).
       dispatch(updateUserLocal({ streak }));

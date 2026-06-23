@@ -39,13 +39,19 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 const ALL_CATEGORY = 'all';
 
-const CoursesScreen = ({ navigation }: any) => {
+const CoursesScreen = ({ navigation, route }: any) => {
   const { colors, spacing, radii } = useTheme();
   const dispatch = useAppDispatch();
   const { courses, loading } = useAppSelector((state) => state.course);
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState<string>(ALL_CATEGORY);
+  // Roadmap'dan kelganda kategoriya oldindan tanlangan bo'ladi.
+  const [category, setCategory] = useState<string>(route?.params?.category ?? ALL_CATEGORY);
   const [modalVisible, setModalVisible] = useState(false);
+
+  // Roadmap bosqichidan qayta kirilganda param o'zgarsa filtrlani yangilaymiz.
+  useEffect(() => {
+    if (route?.params?.category) setCategory(route.params.category);
+  }, [route?.params?.category]);
 
   useEffect(() => {
     const params: { search?: string; category?: string } = {};

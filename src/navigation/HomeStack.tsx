@@ -4,6 +4,7 @@ import HomeScreen from '../screens/home/HomeScreen';
 import CodePlaygroundScreen from '../screens/playground/CodePlaygroundScreen';
 import ShortsScreen from '../screens/shorts/ShortsScreen';
 import FoundersScreen from '../screens/founders/FoundersScreen';
+import RoadmapDetailScreen from '../screens/roadmap/RoadmapDetailScreen';
 import { HomeStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
@@ -15,6 +16,7 @@ const HomeStack = () => {
       <Stack.Screen name="Playground" component={CodePlaygroundScreen} />
       <Stack.Screen name="Shorts" component={ShortsScreen} />
       <Stack.Screen name="Founders" component={FoundersScreen} />
+      <Stack.Screen name="RoadmapDetail" component={RoadmapDetailScreen} />
     </Stack.Navigator>
   );
 };

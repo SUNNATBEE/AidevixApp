@@ -9,6 +9,7 @@ import DailyChallengeScreen from '../screens/challenge/DailyChallengeScreen';
 import { RootStackParamList } from './types';
 import Loader from '../components/common/Loader';
 import { useDailyCheckIn } from '../hooks/useDailyCheckIn';
+import { useReminders } from '../hooks/useReminders';
 import StreakCelebrationModal from '../components/gamification/StreakCelebrationModal';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -21,6 +22,7 @@ const RootNavigator = () => {
   const { isLoggedIn } = useAppSelector((state) => state.auth);
   const [initialCheckDone, setInitialCheckDone] = useState(false);
   const { celebration, closeCelebration } = useDailyCheckIn();
+  useReminders();
 
   useEffect(() => {
     dispatch(checkAuth()).finally(() => setInitialCheckDone(true));

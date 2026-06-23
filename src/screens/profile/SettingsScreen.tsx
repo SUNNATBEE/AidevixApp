@@ -19,13 +19,15 @@ import { logout } from '../../store/slices/authSlice';
 import FadeInView from '../../components/common/FadeInView';
 import { triggerHaptic } from '../../utils/haptics';
 import {
-  scheduleDailyStreakReminder,
-  cancelStreakReminder,
+  refreshStreakReminders,
+  cancelStreakReminders,
+  refreshChallengeReminders,
+  cancelChallengeReminders,
+  STREAK_PREF,
+  CHALLENGE_PREF,
 } from '../../services/notifications';
 
 type ThemeMode = 'light' | 'dark' | 'amoled';
-
-const NOTIF_KEY = 'settings:streakReminder';
 
 const SettingsScreen = () => {
   const { colors, spacing, typography, radii, themeMode, setThemeMode } = useTheme();
@@ -34,17 +36,27 @@ const SettingsScreen = () => {
   const user = useAppSelector((s) => s.auth.user);
 
   const [notifOn, setNotifOn] = useState(true);
+  const [challengeOn, setChallengeOn] = useState(true);
 
   useEffect(() => {
-    AsyncStorage.getItem(NOTIF_KEY).then((v) => setNotifOn(v !== 'false'));
+    AsyncStorage.getItem(STREAK_PREF).then((v) => setNotifOn(v !== 'false'));
+    AsyncStorage.getItem(CHALLENGE_PREF).then((v) => setChallengeOn(v !== 'false'));
   }, []);
 
   const handleNotifToggle = async (next: boolean) => {
     triggerHaptic('light');
     setNotifOn(next);
-    await AsyncStorage.setItem(NOTIF_KEY, String(next));
-    if (next) await scheduleDailyStreakReminder(20, 0);
-    else await cancelStreakReminder();
+    await AsyncStorage.setItem(STREAK_PREF, String(next));
+    if (next) await refreshStreakReminders(false);
+    else await cancelStreakReminders();
+  };
+
+  const handleChallengeToggle = async (next: boolean) => {
+    triggerHaptic('light');
+    setChallengeOn(next);
+    await AsyncStorage.setItem(CHALLENGE_PREF, String(next));
+    if (next) await refreshChallengeReminders(false);
+    else await cancelChallengeReminders();
   };
 
   const handleLogout = () => {
@@ -294,11 +306,24 @@ const SettingsScreen = () => {
           <Row
             icon="notifications-outline"
             title="Kunlik streak eslatmasi"
-            subtitle="Har kuni 20:00 da xabar"
+            subtitle="Check-in qilmasang 20:00 da xabar"
             right={
               <Switch
                 value={notifOn}
                 onValueChange={handleNotifToggle}
+                trackColor={{ false: colors.muted, true: colors.primary }}
+                thumbColor="#ffffff"
+              />
+            }
+          />
+          <Row
+            icon="trophy-outline"
+            title="Kunlik challenge eslatmasi"
+            subtitle="Sinov bajarilmasa 18:00 da xabar"
+            right={
+              <Switch
+                value={challengeOn}
+                onValueChange={handleChallengeToggle}
                 trackColor={{ false: colors.muted, true: colors.primary }}
                 thumbColor="#ffffff"
               />

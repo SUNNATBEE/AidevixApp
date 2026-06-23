@@ -10,8 +10,10 @@ import Screen from '../../components/common/Screen';
 import SectionHeader from '../../components/common/SectionHeader';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import ActivityFeed from '../../components/home/ActivityFeed';
+import RoadmapsSection from '../../components/home/RoadmapsSection';
 import CourseCard from '../../components/course/CourseCard';
 import StreakCounter from '../../components/gamification/StreakCounter';
+import QuizModal from '../../components/quiz/QuizModal';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchTopCourses } from '../../store/slices/courseSlice';
 import { useTheme } from '../../theme';
@@ -22,6 +24,7 @@ const HomeScreen = ({ navigation }: any) => {
   const { user } = useAppSelector((state) => state.auth);
   const { topCourses, loading } = useAppSelector((state) => state.course);
   const [refreshing, setRefreshing] = React.useState(false);
+  const [quizVisible, setQuizVisible] = React.useState(false);
 
   useEffect(() => {
     dispatch(fetchTopCourses());
@@ -65,8 +68,14 @@ const HomeScreen = ({ navigation }: any) => {
         <View style={styles.quickActions}>
           <ActionIcon name="code-slash" label="Editor" onPress={() => navigation.navigate('Playground')} color={colors.primary} />
           <ActionIcon name="play-circle" label="Shorts" onPress={() => navigation.navigate('Shorts')} color={colors.secondary} />
+          <ActionIcon name="checkmark-done" label="Testlar" onPress={() => setQuizVisible(true)} color={colors.success} />
           <ActionIcon name="people" label="Asoschilar" onPress={() => navigation.navigate('Founders')} color={colors.accent} />
         </View>
+      </FadeInView>
+
+      {/* O'quv yo'llari (roadmaplar) */}
+      <FadeInView delay={90}>
+        <RoadmapsSection navigation={navigation} />
       </FadeInView>
 
       {/* Today's challenge */}
@@ -136,6 +145,9 @@ const HomeScreen = ({ navigation }: any) => {
       <FadeInView delay={240}>
         <ActivityFeed />
       </FadeInView>
+
+      {/* Testlar — quick action orqali ochiladi; mavjud birinchi testни qidiradi */}
+      <QuizModal visible={quizVisible} onClose={() => setQuizVisible(false)} />
     </Screen>
   );
 };
@@ -173,10 +185,10 @@ const styles = StyleSheet.create({
   quickActions: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 32,
+    gap: 20,
     marginBottom: 24,
   },
-  actionItem: { alignItems: 'center', width: 72, gap: 8 },
+  actionItem: { alignItems: 'center', width: 68, gap: 8 },
   actionLabel: { fontSize: 12, fontWeight: '500' },
   section: { marginBottom: 24 },
   challengeCard: {

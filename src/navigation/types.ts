@@ -19,10 +19,11 @@ export type HomeStackParamList = {
   Playground: undefined;
   Shorts: undefined;
   Founders: undefined;
+  RoadmapDetail: { roadmapId: string };
 };
 
 export type CourseStackParamList = {
-  Courses: undefined;
+  Courses: { category?: string } | undefined;
   CourseDetail: { courseId: string };
   VideoPlayer: { videoId: string; courseId: string };
 };
