@@ -15,8 +15,8 @@ export const paymentApi = {
   clickPrepare: (data: any) => axiosInstance.post('/payments/click/prepare', data),
   clickComplete: (data: any) => axiosInstance.post('/payments/click/complete', data),
 
-  // To'lov tarixini olish
-  getPaymentHistory: () => axiosInstance.get('/payments/history'),
+  // To'lov tarixini olish — backend GET /payments/my
+  getPaymentHistory: () => axiosInstance.get('/payments/my'),
 
   // To'lov statusini tekshirish
   getPaymentStatus: (paymentId: string) =>

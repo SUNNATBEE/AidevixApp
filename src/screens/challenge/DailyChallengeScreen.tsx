@@ -17,7 +17,6 @@ import ProgressBar from '../../components/common/ProgressBar';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
     Challenge,
-    fetchChallengeProgress,
     fetchTodayChallenges,
 } from '../../store/slices/challengeSlice';
 import { useTheme } from '../../theme';
@@ -108,9 +107,8 @@ const DailyChallengeScreen = ({ navigation }: any) => {
   const load = useCallback(
     async (opts?: { refresh?: boolean }) => {
       if (opts?.refresh) setRefreshing(true);
-      // Avval bugungi challengelarni, keyin progressni olamiz
+      // Bugungi challenge javobida progress ham keladi — bitta so'rov yetarli.
       await dispatch(fetchTodayChallenges());
-      await dispatch(fetchChallengeProgress());
       setRefreshing(false);
     },
     [dispatch]

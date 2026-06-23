@@ -1,0 +1,116 @@
+{
+  "role": "api-integration",
+  "project": "AidevixApp (React Native / Expo)",
+  "date": "2026-06-23",
+  "scope": "src/api/*, src/store/slices/*, auth/token flow, backend endpoint parity",
+  "findings": [
+    {
+      "id": "AUTH-1",
+      "severity": "critical",
+      "confidence": 0.95,
+      "class": "CONFIRM",
+      "file": "src/api/axiosInstance.ts + backend/controllers/authController.js:480",
+      "issue": "Login/2FA/google/telegram responses set httpOnly cookies only; NO accessToken/refreshToken in JSON body. RN cannot read httpOnly Set-Cookie reliably -> storage.getToken() is null -> all authed requests 401.",
+      "status": "pending-confirm"
+    },
+    {
+      "id": "AUTH-2",
+      "severity": "critical",
+      "confidence": 0.95,
+      "class": "CONFIRM",
+      "file": "backend/controllers/authController.js:675",
+      "issue": "refresh-token reads only cookies[REFRESH_COOKIE_NAME]; mobile sends {refreshToken} in body -> 400 'No refresh token provided'.",
+      "status": "pending-confirm"
+    },
+    {
+      "id": "AUTH-3",
+      "severity": "critical",
+      "confidence": 0.9,
+      "class": "CONFIRM",
+      "file": "backend/middleware/auth.js",
+      "issue": "Bearer auth disabled in production unless ALLOW_BEARER_AUTH=true. Mobile relies on Bearer.",
+      "status": "pending-confirm"
+    },
+    {
+      "id": "ENROLL-1",
+      "severity": "high",
+      "confidence": 0.95,
+      "class": "AUTO",
+      "file": "src/api/enrollmentApi.ts:16",
+      "issue": "POST /enrollments {courseId} -> backend is POST /enrollments/:courseId.",
+      "status": "fixed"
+    },
+    {
+      "id": "ENROLL-2",
+      "severity": "medium",
+      "confidence": 0.9,
+      "class": "AUTO",
+      "file": "src/api/enrollmentApi.ts:8",
+      "issue": "GET /enrollments/:id/continue -> backend is GET /enrollments/continue (no param).",
+      "status": "fixed"
+    },
+    {
+      "id": "ENROLL-3",
+      "severity": "medium",
+      "confidence": 0.85,
+      "class": "AUTO",
+      "file": "src/api/enrollmentApi.ts:12",
+      "issue": "getProgress param was enrollmentId; backend expects courseId.",
+      "status": "fixed"
+    },
+    {
+      "id": "CHAL-1",
+      "severity": "high",
+      "confidence": 0.95,
+      "class": "AUTO",
+      "file": "src/api/challengeApi.ts + challengeSlice.ts",
+      "issue": "fetchToday read data.challenges (array); backend returns data.challenge (single) + progress. GET /challenges/progress and POST /:id/progress do not exist. Whole feature returned [] (static fallback only).",
+      "status": "fixed"
+    },
+    {
+      "id": "FOLLOW-1",
+      "severity": "medium",
+      "confidence": 0.9,
+      "class": "AUTO",
+      "file": "src/api/followApi.ts:13,16",
+      "issue": "/follow/profile/:id and /follow/status/:id do not exist; backend is /follow/:id/stats (returns followers/following/isFollowing).",
+      "status": "fixed"
+    },
+    {
+      "id": "PAY-1",
+      "severity": "medium",
+      "confidence": 0.9,
+      "class": "AUTO",
+      "file": "src/api/paymentApi.ts:19",
+      "issue": "GET /payments/history -> backend is GET /payments/my.",
+      "status": "fixed"
+    },
+    {
+      "id": "XP-1",
+      "severity": "medium",
+      "confidence": 0.85,
+      "class": "CONFIRM",
+      "file": "src/api/xpApi.ts:15 + useDailyCheckIn.ts",
+      "issue": "POST /xp/check-in has no backend route. Hook swallows 404 -> daily streak check-in never works.",
+      "status": "pending-confirm"
+    },
+    {
+      "id": "PROJ-1",
+      "severity": "low",
+      "confidence": 0.85,
+      "class": "CONFIRM",
+      "file": "src/api/projectApi.ts:13",
+      "issue": "GET /projects/my has no backend route (matches /:id -> cast error). Currently unused.",
+      "status": "pending-confirm"
+    },
+    {
+      "id": "SEC-1",
+      "severity": "medium",
+      "confidence": 0.8,
+      "class": "CONFIRM",
+      "file": "src/utils/storage.ts",
+      "issue": "JWT stored in AsyncStorage (plaintext). MOBILE_APP_GUIDE specifies expo-secure-store (not installed).",
+      "status": "pending-confirm"
+    }
+  ]
+}

@@ -4,15 +4,15 @@ export const enrollmentApi = {
   // Foydalanuvchining barcha enrollmentlari
   getMyEnrollments: () => axiosInstance.get('/enrollments/my'),
 
-  // Kursni davom ettirish (oxirgi ko'rilgan video)
-  continueEnrollment: (enrollmentId: string) =>
-    axiosInstance.get(`/enrollments/${enrollmentId}/continue`),
+  // Davom ettirish — backend global "continue-learning" (param qabul qilmaydi):
+  // GET /enrollments/continue
+  continueEnrollment: () => axiosInstance.get('/enrollments/continue'),
 
-  // Enrollment progressini olish
-  getProgress: (enrollmentId: string) =>
-    axiosInstance.get(`/enrollments/${enrollmentId}/progress`),
+  // Kurs progressini olish — backend GET /enrollments/:courseId/progress
+  getProgress: (courseId: string) =>
+    axiosInstance.get(`/enrollments/${courseId}/progress`),
 
-  // Kursga yozilish (bepul kurslar uchun)
+  // Kursga yozilish — backend POST /enrollments/:courseId (courseId path'da)
   enroll: (courseId: string) =>
-    axiosInstance.post('/enrollments', { courseId }),
+    axiosInstance.post(`/enrollments/${courseId}`),
 };

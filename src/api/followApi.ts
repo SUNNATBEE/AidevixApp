@@ -9,9 +9,10 @@ export const followApi = {
   getMyFollowers: () => axiosInstance.get('/follow/my/followers'),
   getMyFollowing: () => axiosInstance.get('/follow/my/following'),
 
-  // Boshqa foydalanuvchining public profili
-  getUserProfile: (userId: string) => axiosInstance.get(`/follow/profile/${userId}`),
+  // Follow statistikasi — backend GET /follow/:userId/stats
+  // Javob: { followers, following, isFollowing }
+  getUserProfile: (userId: string) => axiosInstance.get(`/follow/${userId}/stats`),
 
-  // Foydalanuvchini follow qilganmizmi tekshirish
-  checkFollowStatus: (userId: string) => axiosInstance.get(`/follow/status/${userId}`),
+  // Follow holatini tekshirish — xuddi shu stats endpoint isFollowing qaytaradi
+  checkFollowStatus: (userId: string) => axiosInstance.get(`/follow/${userId}/stats`),
 };

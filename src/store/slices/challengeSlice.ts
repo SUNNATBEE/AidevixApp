@@ -36,29 +36,54 @@ const calcRewards = (challenges: Challenge[]) => ({
     .reduce((sum, c) => sum + c.reward, 0),
 });
 
+// Backend challenge `type` → UI icon/color (modelda icon/color yo'q).
+const TYPE_META: Record<string, { icon: string; color: string }> = {
+  watch_video: { icon: 'play-circle', color: '#6366f1' },
+  complete_quiz: { icon: 'checkbox', color: '#a855f7' },
+  streak: { icon: 'flame', color: '#ef4444' },
+  enroll_course: { icon: 'school', color: '#10b981' },
+  rate_course: { icon: 'star', color: '#f59e0b' },
+  use_ai_tool: { icon: 'sparkles', color: '#0ea5e9' },
+  share_prompt: { icon: 'share-social', color: '#14b8a6' },
+};
+
+// Backend `{ challenge, progress }` (yakka) → mobil Challenge[] (bitta element).
+const mapBackendChallenge = (data: any): Challenge[] => {
+  const c = data?.challenge;
+  if (!c) return [];
+  const p = data?.progress ?? {};
+  const target = c.targetCount ?? 1;
+  const progress = p.currentCount ?? 0;
+  const meta = TYPE_META[c.type] ?? { icon: 'trophy', color: '#6366f1' };
+  const status: Challenge['status'] = p.isCompleted
+    ? 'done'
+    : progress > 0
+    ? 'in_progress'
+    : 'not_started';
+  return [
+    {
+      _id: c._id,
+      title: c.title,
+      description: c.description,
+      reward: c.xpReward ?? 0,
+      icon: meta.icon,
+      color: meta.color,
+      progress,
+      target,
+      status,
+    },
+  ];
+};
+
 export const fetchTodayChallenges = createAsyncThunk(
   'challenge/fetchToday',
   async (_, { rejectWithValue }) => {
     try {
       const response = await challengeApi.getTodayChallenges();
-      return response.data?.data?.challenges ?? response.data?.challenges ?? [];
+      return mapBackendChallenge(response.data?.data ?? response.data);
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || 'Challengelarni yuklab bo\'lmadi'
-      );
-    }
-  }
-);
-
-export const fetchChallengeProgress = createAsyncThunk(
-  'challenge/fetchProgress',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await challengeApi.getProgress();
-      return response.data?.data?.challenges ?? response.data?.challenges ?? [];
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || 'Progress yuklab bo\'lmadi'
       );
     }
   }
@@ -88,12 +113,6 @@ const challengeSlice = createSlice({
       .addCase(fetchTodayChallenges.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      })
-      .addCase(fetchChallengeProgress.fulfilled, (state, action) => {
-        state.todayChallenges = action.payload;
-        const { totalReward, earnedReward } = calcRewards(action.payload);
-        state.totalReward = totalReward;
-        state.earnedReward = earnedReward;
       });
   },
 });

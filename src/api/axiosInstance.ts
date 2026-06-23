@@ -8,6 +8,9 @@ const axiosInstance = axios.create({
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
+    // Backend shu header'ni ko'rib login/refresh javoblariga accessToken+refreshToken'ni
+    // JSON body'da qaytaradi (RN httpOnly cookie'ni o'qiy olmaydi). Web cookie-only qoladi.
+    'X-Client-Type': 'mobile',
   },
 });
 
