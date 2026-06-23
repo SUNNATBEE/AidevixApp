@@ -47,6 +47,14 @@ const CourseDetailScreen = ({ route, navigation }: Props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // `<` doimo Kurslar ro'yxatiga olib boradi. canGoBack() butun navigatsiya
+  // daraxtini tekshiradi, shuning uchun Home'dan kelganda Home'ga qaytarib yuborardi.
+  // Shartsiz Courses'ga navigate qilamiz (stack'da bo'lsa pop, bo'lmasa push).
+  const handleBack = () => {
+    triggerHaptic('light');
+    navigation.navigate('Courses');
+  };
+
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
@@ -101,7 +109,7 @@ const CourseDetailScreen = ({ route, navigation }: Props) => {
           {error ?? 'Kurs topilmadi'}
         </Text>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={handleBack}
           style={[styles.backBtn, { backgroundColor: colors.primary, borderRadius: radii.md }]}
         >
           <Text style={styles.backBtnText}>Orqaga</Text>
@@ -165,7 +173,7 @@ const CourseDetailScreen = ({ route, navigation }: Props) => {
           />
           <TouchableOpacity
             style={[styles.headerBtn, styles.headerBtnLeft]}
-            onPress={() => navigation.goBack()}
+            onPress={handleBack}
           >
             <Ionicons name="chevron-back" size={24} color="#fff" />
           </TouchableOpacity>

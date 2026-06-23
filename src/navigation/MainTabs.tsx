@@ -8,6 +8,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { shadow, useTheme } from '../theme';
 import AIChatScreen from '../screens/ai/AIChatScreen';
 import LeaderboardScreen from '../screens/leaderboard/LeaderboardScreen';
@@ -69,6 +70,13 @@ const icons: Record<string, [keyof typeof Ionicons.glyphMap, keyof typeof Ionico
 
 const MainTabs = () => {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
+
+  // Tizim navigatsiya bari (gesture/3-tugma) balandligini insetdan olamiz.
+  // Android'da kamida 10px, ustiga inset.bottom qo'shib bosish zonasini kafolatlaymiz.
+  const bottomInset = insets.bottom;
+  const barHeight = (Platform.OS === 'ios' ? 56 : 58) + bottomInset;
+  const barPaddingBottom = Math.max(bottomInset, Platform.OS === 'ios' ? 28 : 10);
 
   return (
     <Tab.Navigator
@@ -83,6 +91,8 @@ const MainTabs = () => {
         tabBarStyle: [
           styles.tabBar,
           {
+            height: barHeight,
+            paddingBottom: barPaddingBottom,
             backgroundColor: colors.card,
             borderTopColor: colors.border,
           },
@@ -102,9 +112,7 @@ const MainTabs = () => {
 
 const styles = StyleSheet.create({
   tabBar: {
-    height: Platform.OS === 'ios' ? 84 : 68,
     paddingTop: 8,
-    paddingBottom: Platform.OS === 'ios' ? 28 : 10,
     borderTopWidth: StyleSheet.hairlineWidth,
   },
   iconWrap: {
