@@ -77,6 +77,7 @@ const ProfileScreen = ({ navigation }: any) => {
           <ListItem icon="ribbon-outline" iconColor={colors.accent} title="Sertifikatlarim" onPress={nav('Certificates')} />
           <ListItem icon="people-outline" title="Followerlar" onPress={nav('Follow', { tab: 'followers' })} />
           <ListItem icon="gift-outline" iconColor={colors.success} title="Do'st taklif qilish" onPress={nav('Referrals')} />
+          <ListItem icon="bar-chart-outline" iconColor={colors.primary} title="Analitika" onPress={nav('Analytics')} />
           <ListItem icon="settings-outline" title="Sozlamalar" onPress={nav('Settings')} />
           <ListItem icon="log-out-outline" title="Chiqish" onPress={handleLogout} danger chevron={false} />
         </View>

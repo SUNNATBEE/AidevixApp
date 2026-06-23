@@ -7,6 +7,7 @@ import MyCoursesScreen from '../screens/profile/MyCoursesScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import ReferralsScreen from '../screens/profile/ReferralsScreen';
 import SettingsScreen from '../screens/profile/SettingsScreen';
+import AnalyticsScreen from '../screens/profile/AnalyticsScreen';
 import { ProfileStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
@@ -21,6 +22,7 @@ const ProfileStack = () => {
       <Stack.Screen name="Certificates" component={CertificatesScreen} />
       <Stack.Screen name="Follow" component={FollowScreen} />
       <Stack.Screen name="Referrals" component={ReferralsScreen} />
+      <Stack.Screen name="Analytics" component={AnalyticsScreen} />
     </Stack.Navigator>
   );
 };

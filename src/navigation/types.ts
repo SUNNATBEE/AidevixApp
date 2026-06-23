@@ -36,6 +36,7 @@ export type ProfileStackParamList = {
   Certificates: undefined;
   Follow: { tab?: 'followers' | 'following' };
   Referrals: undefined;
+  Analytics: undefined;
 };
 
 export type RootStackParamList = {
