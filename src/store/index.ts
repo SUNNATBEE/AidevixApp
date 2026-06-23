@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
+import bookmarkReducer from './slices/bookmarkSlice';
 import certificateReducer from './slices/certificateSlice';
 import challengeReducer from './slices/challengeSlice';
 import chatReducer from './slices/chatSlice';
@@ -14,6 +15,7 @@ import wishlistReducer from './slices/wishlistSlice';
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    bookmark: bookmarkReducer,
     course: courseReducer,
     ranking: rankingReducer,
     chat: chatReducer,

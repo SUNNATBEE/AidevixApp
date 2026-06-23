@@ -20,6 +20,7 @@ import { useTheme } from '../../theme';
 import { triggerHaptic } from '../../utils/haptics';
 import { CodeExample, EXAMPLES } from './examples';
 import AiHelperModal from './AiHelperModal';
+import AiCodeReviewModal from './AiCodeReviewModal';
 
 type TabKey = 'html' | 'css' | 'js' | 'output';
 type CodeTabKey = Exclude<TabKey, 'output'>;
@@ -237,6 +238,7 @@ const CodePlaygroundScreen = () => {
   const [showExamples, setShowExamples] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [showAi, setShowAi] = useState(false);
+  const [showReview, setShowReview] = useState(false);
   const [exampleFilter, setExampleFilter] = useState<'all' | 'html' | 'css' | 'js'>('all');
 
   const [selection, setSelection] = useState({ start: 0, end: 0 });
@@ -484,6 +486,16 @@ const CodePlaygroundScreen = () => {
             Yozing → Ishga tushiring → Natijani ko'ring
           </Text>
         </View>
+        <TouchableOpacity
+          style={[styles.headerIconButton, { backgroundColor: colors.muted, borderColor: colors.border }]}
+          onPress={() => {
+            triggerHaptic('light');
+            setShowReview(true);
+          }}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="shield-checkmark-outline" size={18} color={colors.secondary} />
+        </TouchableOpacity>
         <TouchableOpacity
           style={[styles.headerIconButton, { backgroundColor: colors.muted, borderColor: colors.border }]}
           onPress={() => {
@@ -895,6 +907,14 @@ const CodePlaygroundScreen = () => {
         css={css}
         js={js}
         activeLanguage={activeTab}
+      />
+
+      <AiCodeReviewModal
+        visible={showReview}
+        onClose={() => setShowReview(false)}
+        html={html}
+        css={css}
+        js={js}
       />
     </KeyboardAvoidingView>
   );
